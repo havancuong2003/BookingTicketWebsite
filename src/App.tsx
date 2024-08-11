@@ -1,9 +1,9 @@
-import { Layout } from "./layout";
+import { LandingPage } from "./pages";
 
 function App() {
     return (
         <>
-            <Layout />
+            <LandingPage />
         </>
     );
 }

@@ -7,14 +7,5 @@ type HeaderProps = {
 };
 
 export const Header: React.FC<HeaderProps> = ({ classes }) => {
-    return (
-        <div
-            className={clsx(
-                classes?.with,
-                "text-3xl center flex justify-center items-center h-10 md:hidden lg:block"
-            )}
-        >
-            <p>adasdasdsa</p>
-        </div>
-    );
+    return <div className={clsx(classes?.with, "")}>Header</div>;
 };
