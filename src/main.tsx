@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { LandingPage, Login, SignUp } from "./pages";
+import { LandingPage, Login, Movie, Schedule, SignUp } from "./pages";
 import { Layout } from "./layout";
 
 const router = createBrowserRouter([
@@ -15,8 +15,20 @@ const router = createBrowserRouter([
         ),
     },
     {
-        path: "/test",
-        element: <div>abcd test</div>,
+        path: "/movie",
+        element: (
+            <Layout>
+                <Movie />
+            </Layout>
+        ),
+    },
+    {
+        path: "/schedule",
+        element: (
+            <Layout>
+                <Schedule />
+            </Layout>
+        ),
     },
     {
         path: "/login",

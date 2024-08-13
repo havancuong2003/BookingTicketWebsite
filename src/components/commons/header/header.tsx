@@ -12,10 +12,18 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import logo from "../../../assets/img/logo.png";
-
-const pages = ["Lịch chiếu phim", "Voucher", "Ưu đãi"];
+import { Link } from "@mui/material";
+const pages: Pages = {
+    "Lịch chiếu rạp": "/schedule",
+    Phim: "/movie",
+    Voucher: "/voucher",
+    "Ưu đãi": "/offer",
+    "Hỗ trợ": "/support",
+};
 const settings = ["Trang cá nhân", "Thành Viên", "Đăng xuất"];
-
+type Pages = {
+    [key: string]: string; // Khai báo kiểu rõ ràng cho đối tượng pages
+};
 export function Header() {
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
         null
@@ -44,16 +52,18 @@ export function Header() {
             <Container maxWidth="xl">
                 <Toolbar disableGutters sx={{ height: 80 }}>
                     {/* Logo trên PC */}
-                    <Box
-                        component="img"
-                        sx={{
-                            height: 100,
-                            display: { xs: "none", md: "flex" },
-                            flex: { xs: 4, md: 3 },
-                        }}
-                        alt="Logo"
-                        src={logo}
-                    />
+                    <Link href="/">
+                        <Box
+                            component="img"
+                            sx={{
+                                height: 100,
+                                display: { xs: "none", md: "flex" },
+                                flex: { xs: 4, md: 3 },
+                            }}
+                            alt="Logo"
+                            src={logo}
+                        />
+                    </Link>
 
                     {/* NAV */}
                     <Box
@@ -64,7 +74,7 @@ export function Header() {
                             justifyContent: { xs: "center", md: "center" },
                         }}
                     >
-                        {pages.map((page) => (
+                        {/* {pages.map((page) => (
                             <Button
                                 key={page}
                                 onClick={handleCloseNavMenu}
@@ -73,10 +83,34 @@ export function Header() {
                                     color: "white",
                                     display: { xs: "none", md: "block" },
                                     marginLeft: { xs: 0, md: 3 },
+                                    fontWeight: "bold",
+                                    fontSize: "18px",
                                 }}
                             >
                                 {page}
                             </Button>
+                        ))} */}
+                        {Object.keys(pages).map((page) => (
+                            <Link
+                                key={page}
+                                href={pages[page]}
+                                underline="none" // Xóa gạch chân dưới liên kết
+                                sx={{ display: "inline-block" }} // Đảm bảo Link có thể chứa Button
+                            >
+                                <Button
+                                    onClick={handleCloseNavMenu}
+                                    sx={{
+                                        my: 2,
+                                        color: "white",
+                                        display: { xs: "none", md: "block" },
+                                        marginLeft: { xs: 0, md: 3 },
+                                        fontWeight: "bold",
+                                        fontSize: "18px",
+                                    }}
+                                >
+                                    {page}
+                                </Button>
+                            </Link>
                         ))}
 
                         <IconButton
@@ -110,31 +144,48 @@ export function Header() {
                                 display: { xs: "block", md: "none" },
                             }}
                         >
-                            {pages.map((page) => (
-                                <MenuItem
+                            {Object.keys(pages).map((page) => (
+                                <Link
                                     key={page}
-                                    onClick={handleCloseNavMenu}
+                                    href={pages[page]}
+                                    underline="none" // Xóa gạch chân dưới liên kết
+                                    sx={{ display: "inline-block" }} // Đảm bảo Link có thể chứa Button
                                 >
-                                    <Typography textAlign="center">
+                                    <Button
+                                        onClick={handleCloseNavMenu}
+                                        sx={{
+                                            my: 2,
+                                            color: "white",
+                                            display: {
+                                                xs: "none",
+                                                md: "block",
+                                            },
+                                            marginLeft: { xs: 0, md: 3 },
+                                            fontWeight: "bold",
+                                            fontSize: "18px",
+                                        }}
+                                    >
                                         {page}
-                                    </Typography>
-                                </MenuItem>
+                                    </Button>
+                                </Link>
                             ))}
                         </Menu>
                     </Box>
 
                     {/* Logo trên Mobile */}
-                    <Box
-                        component="img"
-                        sx={{
-                            height: 80,
-                            width: 250,
-                            display: { xs: "flex", md: "none" },
-                            flex: { xs: 4, md: 3 },
-                        }}
-                        alt="Logo"
-                        src={logo}
-                    />
+                    <Link href="">
+                        <Box
+                            component="img"
+                            sx={{
+                                height: 80,
+                                width: 250,
+                                display: { xs: "flex", md: "none" },
+                                flex: { xs: 4, md: 3 },
+                            }}
+                            alt="Logo"
+                            src={logo}
+                        />
+                    </Link>
 
                     {/* User */}
                     <Box
