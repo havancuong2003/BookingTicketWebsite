@@ -12,7 +12,8 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import logo from "../../../assets/img/logo.png";
-import { Link } from "@mui/material";
+import { Link } from "react-router-dom";
+
 const pages: Pages = {
     "Lịch chiếu rạp": "/schedule",
     Phim: "/movie",
@@ -52,7 +53,7 @@ export function Header() {
             <Container maxWidth="xl">
                 <Toolbar disableGutters sx={{ height: 80 }}>
                     {/* Logo trên PC */}
-                    <Link href="/">
+                    <Link to="/">
                         <Box
                             component="img"
                             sx={{
@@ -91,12 +92,7 @@ export function Header() {
                             </Button>
                         ))} */}
                         {Object.keys(pages).map((page) => (
-                            <Link
-                                key={page}
-                                href={pages[page]}
-                                underline="none" // Xóa gạch chân dưới liên kết
-                                sx={{ display: "inline-block" }} // Đảm bảo Link có thể chứa Button
-                            >
+                            <Link key={page} to={pages[page]}>
                                 <Button
                                     onClick={handleCloseNavMenu}
                                     sx={{
@@ -145,12 +141,7 @@ export function Header() {
                             }}
                         >
                             {Object.keys(pages).map((page) => (
-                                <Link
-                                    key={page}
-                                    href={pages[page]}
-                                    underline="none" // Xóa gạch chân dưới liên kết
-                                    sx={{ display: "inline-block" }} // Đảm bảo Link có thể chứa Button
-                                >
+                                <Link key={page} to={pages[page]}>
                                     <Button
                                         onClick={handleCloseNavMenu}
                                         sx={{
@@ -173,7 +164,7 @@ export function Header() {
                     </Box>
 
                     {/* Logo trên Mobile */}
-                    <Link href="">
+                    <Link to="">
                         <Box
                             component="img"
                             sx={{
