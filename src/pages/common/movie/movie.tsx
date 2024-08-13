@@ -141,17 +141,29 @@ export const Movie: React.FC = () => {
                                         gutterBottom
                                         variant="h5"
                                         component="div"
+                                        sx={{
+                                            fontFamily:
+                                                "'trebuchet ms', sans-serif",
+                                            fontWeight: "bold",
+                                            color: "#337ab7",
+                                        }}
                                     >
                                         {movie.name}
                                     </Typography>
                                     <Typography variant="body2">
                                         <span className="text-sm">
-                                            Thể loại: {movie.type}
+                                            <span className="text-black font-bold">
+                                                Thể loại
+                                            </span>
+                                            : {movie.type}
                                         </span>
                                     </Typography>
                                     <Typography variant="body2">
                                         <span className="text-sm">
-                                            Thời lượng: {movie.time}
+                                            <span className="text-black font-bold">
+                                                Thời lượng
+                                            </span>
+                                            : {movie.time}
                                         </span>
                                     </Typography>
                                 </CardContent>
