@@ -9,5 +9,4 @@ export default defineConfig({
             "@emotion/styled": "@emotion/styled",
         },
     },
-    base: "/BookingTicketWebsite/",
 });
