@@ -146,14 +146,14 @@ export function Header() {
                                         onClick={handleCloseNavMenu}
                                         sx={{
                                             my: 2,
-                                            color: "white",
+                                            color: "black",
                                             display: {
-                                                xs: "none",
-                                                md: "block",
+                                                xs: "block",
+                                                md: "none",
                                             },
                                             marginLeft: { xs: 0, md: 3 },
                                             fontWeight: "bold",
-                                            fontSize: "18px",
+                                            fontSize: "15px",
                                         }}
                                     >
                                         {page}
@@ -164,7 +164,7 @@ export function Header() {
                     </Box>
 
                     {/* Logo trên Mobile */}
-                    <Link to="">
+                    <Link to="/">
                         <Box
                             component="img"
                             sx={{
