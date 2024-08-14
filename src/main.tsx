@@ -2,7 +2,16 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { LandingPage, Login, Movie, Schedule, SignUp } from "./pages";
+import {
+    LandingPage,
+    Login,
+    Movie,
+    Offer,
+    Schedule,
+    SignUp,
+    Support,
+    Voucher,
+} from "./pages";
 import { Layout } from "./layout";
 
 const router = createBrowserRouter([
@@ -37,6 +46,30 @@ const router = createBrowserRouter([
     {
         path: "/signup",
         element: <SignUp />,
+    },
+    {
+        path: "/voucher",
+        element: (
+            <Layout>
+                <Voucher />
+            </Layout>
+        ),
+    },
+    {
+        path: "/offer",
+        element: (
+            <Layout>
+                <Offer />
+            </Layout>
+        ),
+    },
+    {
+        path: "/support",
+        element: (
+            <Layout>
+                <Support />
+            </Layout>
+        ),
     },
 ]);
 ReactDOM.createRoot(document.getElementById("root")!).render(
