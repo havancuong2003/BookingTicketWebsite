@@ -1,6 +1,6 @@
 export function Footer() {
     return (
-        <footer className="bg-neutral-100 text-center text-neutral-600 dark:bg-neutral-600 dark:text-neutral-200 lg:text-left">
+        <footer className="bg-neutral-300 text-center text-neutral-900 dark:bg-neutral-600 dark:text-neutral-200 lg:text-left">
             {/* <!-- Main container div: holds the entire content of the footer, including four sections (TW Elements, Products, Useful links, and Contact), with responsive styling and appropriate padding/margins. --> */}
             <div className="mx-6 py-10 text-center md:text-left">
                 <div className="grid-1 grid gap-8 md:grid-cols-2 lg:grid-cols-2">
@@ -12,22 +12,22 @@ export function Footer() {
                             Technologies
                         </h6>
                         <p className="mb-4 text-center">
-                            <a className="text-neutral-600 dark:text-neutral-200">
+                            <a className="text-neutral-900 dark:text-neutral-200">
                                 Vite - React - TypeScript
                             </a>
                         </p>
                         <p className="mb-4 text-center">
-                            <a className="text-neutral-600 dark:text-neutral-200">
+                            <a className="text-neutral-900 dark:text-neutral-200">
                                 NestJS
                             </a>
                         </p>
                         <p className="mb-4 text-center">
-                            <a className="text-neutral-600 dark:text-neutral-200">
+                            <a className="text-neutral-900 dark:text-neutral-200">
                                 PostgreSQL
                             </a>
                         </p>
                         <p className="mb-4 text-center">
-                            <a className="text-neutral-600 dark:text-neutral-200">
+                            <a className="text-neutral-900 dark:text-neutral-200">
                                 Github
                             </a>
                         </p>

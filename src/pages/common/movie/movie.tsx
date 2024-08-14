@@ -122,14 +122,14 @@ export const Movie: React.FC = () => {
                             selected == 2 ? "text-black " : "text-gray-800"
                         }`}
                     >
-                        PHIM SẮP CHIẾU
+                        PHIM ĐANG CHIẾU
                     </span>
                 </div>
             </div>
             <div className="container mx-auto px-4 mb-40 mt-20">
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-20 ">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4   gap-20 ">
                     {data.map((movie) => (
-                        <div key={movie.id} className="">
+                        <div key={movie.id} className="flex justify-center">
                             <Card sx={{ maxWidth: 270 }}>
                                 <CardMedia
                                     sx={{ height: 500, width: 270 }}
