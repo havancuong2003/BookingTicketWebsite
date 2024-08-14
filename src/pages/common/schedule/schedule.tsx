@@ -212,7 +212,7 @@ export const Schedule: React.FC<MovieProps> = ({ classes }) => {
                                 <span
                                     className={clsx(
                                         classes?.movieName,
-                                        "text-5xl"
+                                        "xs:text-2xl lg:text-5xl"
                                     )}
                                 >
                                     {movies[0].name}
@@ -220,13 +220,13 @@ export const Schedule: React.FC<MovieProps> = ({ classes }) => {
                             </div>
                             <div className="sm:mt-5">
                                 <LocalOfferIcon className="mr-2" />
-                                <span className="text-lg">
+                                <span className="lg:text-lg">
                                     {movies[0].type?.join(", ")}
                                 </span>
                             </div>
                             <div className="mt-2 mb-3 sm:mt-3 sm:mb-10">
-                                <AccessTimeIcon />
-                                <span className="text-lg ml-1 mt-5">
+                                <AccessTimeIcon className="mr-1" />
+                                <span className="lg:text-lg ml-1 mt-5">
                                     {movies[0].duration}
                                 </span>
                             </div>
@@ -234,19 +234,19 @@ export const Schedule: React.FC<MovieProps> = ({ classes }) => {
                                 {movies[0].subtitleStyle?.map((st) => (
                                     <span
                                         key={st}
-                                        className="font-bold text-2xl mr-2"
+                                        className="font-bold text-lg  lg:text-2xl mr-2"
                                     >
                                         {st} <span>|</span>
                                     </span>
                                 ))}
                             </div>
-                            <div className="mt-4 grid grid-cols-2  lg:grid-cols-4 xl:grid-cols-5">
+                            <div className="mt-4 grid grid-cols-2  lg:grid-cols-4 lg:gap-12 xl:gap-12 xl:grid-cols-5 2xl:gap-0">
                                 {movies[0].showTime?.map((time, index) => (
                                     <div key={index} className="mb-2 ">
-                                        <div className="bg-gray-300 text-black w-32 p-4 text-xl">
+                                        <div className="bg-gray-300 text-black w-28 lg:w-32 p-3 lg:p-4 lg:text-xl">
                                             {time.time}
                                         </div>
-                                        <div className="p-4">
+                                        <div className="p-4 xs:text-sm">
                                             {time.emptySeats} ghế trống
                                         </div>
                                     </div>
@@ -283,7 +283,12 @@ export const Schedule: React.FC<MovieProps> = ({ classes }) => {
                                         </span>
                                     </div>
                                     <div className="mt-2">
+                                        <LocalOfferIcon className="mr-2" />{" "}
                                         {movie.type?.join(", ")}{" "}
+                                    </div>
+                                    <div>
+                                        {" "}
+                                        <AccessTimeIcon className="mr-2" />{" "}
                                         <span>{movie.duration}</span>
                                     </div>
                                     <div className="mt-2">
@@ -296,7 +301,7 @@ export const Schedule: React.FC<MovieProps> = ({ classes }) => {
                                             </span>
                                         ))}
                                     </div>
-                                    <div className="mt-4 grid grid-cols-2 sm:grid-cols-4">
+                                    <div className="mt-4 grid grid-cols-2 sm:grid-cols-1  md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 xl:gap-10 2xl:gap-10 2xl:grid-cols-4">
                                         {movie.showTime?.map((time, index) => (
                                             <div key={index} className="mb-2">
                                                 <div className="bg-gray-300 text-black w-24 p-3">
