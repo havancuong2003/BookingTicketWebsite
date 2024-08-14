@@ -7,9 +7,13 @@ import {
     LandingPage,
     Login,
     Movie,
+    Offer,
     Schedule,
     SignUp,
+    Support,
+    Voucher,
 } from "./pages";
+
 import { Layout } from "./layout";
 
 const router = createBrowserRouter([
@@ -44,6 +48,30 @@ const router = createBrowserRouter([
     {
         path: "/signup",
         element: <SignUp />,
+    },
+    {
+        path: "/voucher",
+        element: (
+            <Layout>
+                <Voucher />
+            </Layout>
+        ),
+    },
+    {
+        path: "/offer",
+        element: (
+            <Layout>
+                <Offer />
+            </Layout>
+        ),
+    },
+    {
+        path: "/support",
+        element: (
+            <Layout>
+                <Support />
+            </Layout>
+        ),
     },
     {
         path: "/dashboard",
