@@ -7,11 +7,17 @@ import banner3 from "../../../assets/img/banner3.jpg";
 import logo from "../../../assets/img/logo.png";
 import abc from "../../../assets/img/ABC.png";
 import { Movie } from "..";
+import { useParams } from "react-router-dom";
 export const LandingPage = () => {
     const images = [banner1, banner2, banner3, logo, abc];
     const [currentIndex, setCurrentIndex] = useState(0);
     const intervalRef = useRef<number | null>(null);
     const timeoutRef = useRef<number | null>(null);
+    const accessToken = new URLSearchParams(window.location.search).get(
+        "accessToken"
+    );
+    const [userName, setUserName] = useState("");
+    console.log("param", accessToken);
 
     useEffect(() => {
         startAutoSlide();
@@ -22,6 +28,39 @@ export const LandingPage = () => {
             }
         };
     }, []);
+
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            if (accessToken) {
+                try {
+                    const response = await fetch(
+                        "https://www.googleapis.com/oauth2/v3/userinfo",
+                        {
+                            headers: {
+                                Authorization: `Bearer ${accessToken}`,
+                            },
+                        }
+                    );
+
+                    if (response.ok) {
+                        const userInfo = await response.json();
+                        console.log("userInfo", userInfo);
+
+                        setUserName(userInfo.name); // Giả định là Google trả về trường 'name'
+                    } else {
+                        console.error(
+                            "Failed to fetch user info:",
+                            await response.text()
+                        );
+                    }
+                } catch (error) {
+                    console.error("Error fetching user info:", error);
+                }
+            }
+        };
+
+        fetchUserInfo();
+    }, [accessToken]);
 
     const startAutoSlide = () => {
         stopAutoSlide();
@@ -72,6 +111,7 @@ export const LandingPage = () => {
     return (
         <>
             <div className="relative w-full md:w-11/12 h-[300px] sm:h-[500px] md:h-[600px] mt-[150px] mb-[150px] mx-auto overflow-hidden ">
+                <h1>Hello {userName}</h1>
                 <div
                     className="flex transition-transform duration-500 ease-in-out"
                     style={{
