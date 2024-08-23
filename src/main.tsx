@@ -6,6 +6,7 @@ import {
     AddNewMovie,
     Dashboard,
     LandingPage,
+    ListMovie,
     Login,
     Movie,
     Offer,
@@ -78,6 +79,10 @@ const router = createBrowserRouter([
     {
         path: "/admin/addnewmovie",
         element: <AddNewMovie />,
+    },
+    {
+        path: "/admin/listmovie",
+        element: <ListMovie />,
     },
     {
         path: "/dashboard",
