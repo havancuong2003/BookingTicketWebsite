@@ -17,6 +17,18 @@ export function Login() {
             password: data.get("password"),
         });
     };
+    console.log(import.meta.env.BACKEND_URL);
+
+    const login = async () => {
+        try {
+            // Chuyển hướng người dùng đến backend để bắt đầu quy trình xác thực với Google
+            console.log("abads");
+
+            window.location.href = `http://localhost:3000/auth/google`;
+        } catch (error) {
+            console.error("Login Failed:", error);
+        }
+    };
 
     return (
         <Container component="main" maxWidth="xs">
@@ -68,6 +80,7 @@ export function Login() {
                             color: "black",
                             border: "1px solid black",
                         }}
+                        onClick={login}
                     >
                         <FcGoogle size={30} />{" "}
                         <span className="ml-10">Đăng nhập với Google</span>

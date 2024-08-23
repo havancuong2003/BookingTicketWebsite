@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import {
+    AddNewMovie,
     Dashboard,
     LandingPage,
     Login,
@@ -15,6 +16,7 @@ import {
 } from "./pages";
 
 import { Layout } from "./layout";
+import NotFound from "./components/commons/not-found";
 
 const router = createBrowserRouter([
     {
@@ -74,8 +76,16 @@ const router = createBrowserRouter([
         ),
     },
     {
+        path: "/admin/addnewmovie",
+        element: <AddNewMovie />,
+    },
+    {
         path: "/dashboard",
         element: <Dashboard />,
+    },
+    {
+        path: "*",
+        element: <NotFound />,
     },
 ]);
 ReactDOM.createRoot(document.getElementById("root")!).render(
