@@ -16,6 +16,7 @@ export const LandingPage = () => {
     const accessToken = new URLSearchParams(window.location.search).get(
         "accessToken"
     );
+    localStorage.setItem("accessToken", accessToken || "");
     const [userName, setUserName] = useState("");
     console.log("param", accessToken);
 

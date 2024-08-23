@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
     TextField,
     Button,
@@ -7,9 +8,10 @@ import {
     FormControl,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 type FormData = {
-    movieId: number;
     title: string;
     description: string;
     director: string;
@@ -17,39 +19,98 @@ type FormData = {
     releaseDate: string;
     rating: number;
     status: string;
-    img: FileList;
-    videoTrailer: FileList;
+
     duration: number;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: string;
+    updatedAt: string;
 };
 
 export const AddNewMovie = () => {
+    const accessToken = localStorage.getItem("accessToken");
+
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm<FormData>();
+    const navigate = useNavigate();
 
-    const onSubmit = (data: FormData) => {
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            setSelectedFile(file);
+        }
+    };
+
+    const uploadVideoToGoogleDrive = async (file: File) => {
+        if (!accessToken) {
+            console.error("No access token found, please login first.");
+            return null;
+        }
+
         const formData = new FormData();
-        formData.append("title", data.title);
-        formData.append("description", data.description);
-        formData.append("director", data.director);
-        formData.append("actors", data.actors);
-        formData.append("releaseDate", data.releaseDate);
-        formData.append("rating", data.rating.toString());
-        formData.append("status", data.status);
-        formData.append("img", data.img[0]);
-        formData.append("videoTrailer", data.videoTrailer[0]);
-        formData.append("duration", data.duration.toString());
-        formData.append("createdAt", data.createdAt.toISOString());
-        formData.append("updatedAt", data.updatedAt.toISOString());
+        formData.append("video", file);
 
-        console.log([...formData.entries()]); // For debugging purposes
+        try {
+            const response = await fetch(`http://localhost:3000/auth/upload`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+                body: formData,
+            });
 
-        // Here you would typically send formData to your API
-        // e.g., axios.post("/api/movies", formData);
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Video uploaded successfully:", data);
+                return data; // Return video ID
+            } else {
+                console.error("Failed to upload video:", await response.text());
+                return null;
+            }
+        } catch (error) {
+            console.error("Error uploading video:", error);
+            return null;
+        }
+    };
+
+    const onSubmit = async (data: FormData) => {
+        if (!selectedFile) {
+            console.error("No video file selected.");
+            return;
+        }
+        console.log("data", data);
+
+        const videoId = await uploadVideoToGoogleDrive(selectedFile);
+        if (!videoId) {
+            console.error("Failed to upload video. Movie creation aborted.");
+            return;
+        }
+        const releaseDate = new Date(data.releaseDate).toISOString(); // Chuyển đổi thành định dạng ISO-8601
+
+        const movieData = {
+            title: data.title,
+            description: data.description,
+            director: data.director,
+            actors: data.actors,
+            releaseDate: releaseDate,
+            rating: Number(data.rating), // Chuyển đổi thành số
+            status: data.status,
+            duration: Number(data.duration),
+            trailer: videoId.id,
+        };
+
+        try {
+            const response = await axios.post(
+                "http://localhost:3000/movie/create",
+                movieData
+            );
+            console.log("Movie added successfully:", response.data);
+            navigate("/admin/listmovie");
+        } catch (error) {
+            console.error("Error adding movie:", error);
+        }
     };
 
     return (
@@ -188,66 +249,17 @@ export const AddNewMovie = () => {
                             error={!!errors.duration}
                             helperText={errors.duration?.message}
                         />
-                        <div className="col-span-2">
-                            <InputLabel>Ảnh banner</InputLabel>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                {...register("img", {
-                                    required: "Ảnh banner là bắt buộc.",
-                                })}
-                                className="mb-4"
-                            />
-                            {errors.img && (
-                                <p className="text-red-500">
-                                    {errors.img.message}
-                                </p>
-                            )}
-                        </div>
+
                         <div className="col-span-2">
                             <InputLabel>Video trailer</InputLabel>
                             <input
                                 type="file"
                                 accept="video/*"
-                                {...register("videoTrailer", {
-                                    required: "Video trailer là bắt buộc.",
-                                })}
-                                className="mb-4"
+                                onChange={handleFileChange}
+                                className="w-full p-2 mb-4 border border-gray-300 rounded-lg"
+                                required
                             />
-                            {errors.videoTrailer && (
-                                <p className="text-red-500">
-                                    {errors.videoTrailer.message}
-                                </p>
-                            )}
                         </div>
-                        <TextField
-                            id="createdAt"
-                            label="Ngày tạo"
-                            variant="outlined"
-                            type="date"
-                            fullWidth
-                            margin="normal"
-                            InputLabelProps={{ shrink: true }}
-                            {...register("createdAt", {
-                                required: "Ngày tạo là bắt buộc.",
-                            })}
-                            error={!!errors.createdAt}
-                            helperText={errors.createdAt?.message}
-                        />
-                        <TextField
-                            id="updatedAt"
-                            label="Ngày cập nhật"
-                            variant="outlined"
-                            type="date"
-                            fullWidth
-                            margin="normal"
-                            InputLabelProps={{ shrink: true }}
-                            {...register("updatedAt", {
-                                required: "Ngày cập nhật là bắt buộc.",
-                            })}
-                            error={!!errors.updatedAt}
-                            helperText={errors.updatedAt?.message}
-                        />
                     </div>
                     <Button
                         type="submit"
