@@ -94,6 +94,22 @@ const router = createBrowserRouter([
         ),
     },
     {
+        path: "/admin/addcinema",
+        element: (
+            <PrivateRoute>
+                <AddNewMovie />
+            </PrivateRoute>
+        ),
+    },
+    {
+        path: "/admin/listcinema",
+        element: (
+            <PrivateRoute>
+                <ListMovie />
+            </PrivateRoute>
+        ),
+    },
+    {
         path: "*",
         element: <NotFound />,
     },
