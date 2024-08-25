@@ -18,7 +18,7 @@ export const ListMovie = () => {
         const fetchData = async () => {
             try {
                 const response = await axios.get(
-                    "http://localhost:3000/movie/getAll"
+                    `${import.meta.env.VITE_BACKEND_URL}/movie/getAll`
                 );
                 setMovies(response.data);
             } catch (error) {

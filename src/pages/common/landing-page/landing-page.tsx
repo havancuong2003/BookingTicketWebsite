@@ -7,7 +7,6 @@ import banner3 from "../../../assets/img/banner3.jpg";
 import logo from "../../../assets/img/logo.png";
 import abc from "../../../assets/img/ABC.png";
 import { Movie } from "..";
-import { useParams } from "react-router-dom";
 export const LandingPage = () => {
     const images = [banner1, banner2, banner3, logo, abc];
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -18,7 +17,6 @@ export const LandingPage = () => {
     );
     localStorage.setItem("accessToken", accessToken || "");
     const [userName, setUserName] = useState("");
-    console.log("param", accessToken);
 
     useEffect(() => {
         startAutoSlide();
@@ -45,9 +43,8 @@ export const LandingPage = () => {
 
                     if (response.ok) {
                         const userInfo = await response.json();
-                        console.log("userInfo", userInfo);
 
-                        setUserName(userInfo.name); // Giả định là Google trả về trường 'name'
+                        setUserName(userInfo.name);
                     } else {
                         console.error(
                             "Failed to fetch user info:",

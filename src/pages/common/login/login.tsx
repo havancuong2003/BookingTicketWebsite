@@ -17,14 +17,12 @@ export function Login() {
             password: data.get("password"),
         });
     };
-    console.log(import.meta.env.BACKEND_URL);
 
     const login = async () => {
         try {
-            // Chuyển hướng người dùng đến backend để bắt đầu quy trình xác thực với Google
-            console.log("abads");
-
-            window.location.href = `http://localhost:3000/auth/google`;
+            window.location.href = `${
+                import.meta.env.VITE_BACKEND_URL
+            }/auth/google`;
         } catch (error) {
             console.error("Login Failed:", error);
         }

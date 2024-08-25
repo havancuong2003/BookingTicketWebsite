@@ -15,7 +15,10 @@ import {
     Voucher,
 } from "./pages";
 import { Layout } from "./layout";
-import NotFound from "./components/commons/not-found";
+
+import { AuthProvider } from "./contexts";
+import { NotFound } from "./components";
+import PrivateRoute from "./contexts/PrivateRoute";
 
 const router = createBrowserRouter([
     {
@@ -76,11 +79,19 @@ const router = createBrowserRouter([
     },
     {
         path: "/admin/addnewmovie",
-        element: <AddNewMovie />,
+        element: (
+            <PrivateRoute>
+                <AddNewMovie />
+            </PrivateRoute>
+        ),
     },
     {
         path: "/admin/listmovie",
-        element: <ListMovie />,
+        element: (
+            <PrivateRoute>
+                <ListMovie />
+            </PrivateRoute>
+        ),
     },
     {
         path: "*",
@@ -89,6 +100,8 @@ const router = createBrowserRouter([
 ]);
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
-        <RouterProvider router={router} />
+        <AuthProvider>
+            <RouterProvider router={router} />
+        </AuthProvider>
     </React.StrictMode>
 );

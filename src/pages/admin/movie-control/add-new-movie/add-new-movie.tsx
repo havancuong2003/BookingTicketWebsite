@@ -53,13 +53,16 @@ export const AddNewMovie = () => {
         formData.append("video", file);
 
         try {
-            const response = await fetch(`http://localhost:3000/auth/upload`, {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
-                body: formData,
-            });
+            const response = await fetch(
+                `${import.meta.env.VITE_BACKEND_URL}/auth/upload`,
+                {
+                    method: "POST",
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                    body: formData,
+                }
+            );
 
             if (response.ok) {
                 const data = await response.json();
@@ -103,7 +106,7 @@ export const AddNewMovie = () => {
 
         try {
             const response = await axios.post(
-                "http://localhost:3000/movie/create",
+                `${import.meta.env.VITE_BACKEND_URL}/movie/create`,
                 movieData
             );
             console.log("Movie added successfully:", response.data);
