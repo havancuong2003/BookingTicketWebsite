@@ -3,7 +3,6 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
@@ -11,37 +10,38 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { useForm, Controller } from "react-hook-form";
+import { signUp } from "../../../services";
 
-// function Copyright(props: any) {
-//     return (
-//         <Typography
-//             variant="body2"
-//             color="text.secondary"
-//             align="center"
-//             {...props}
-//         >
-//             {"Movie © "}
-//             <Link color="inherit" href="https://mui.com/">
-//                 Bate
-//             </Link>{" "}
-//             {new Date().getFullYear()}
-//             {"."}
-//         </Typography>
-//     );
-// }
+type FormData = {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+};
 
-// TODO remove, this demo shouldn't need to reset the theme.
 const defaultTheme = createTheme();
 
 export function SignUp() {
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        console.log({
-            email: data.get("email"),
-            password: data.get("password"),
+    const {
+        register,
+        handleSubmit,
+        control,
+        formState: { errors },
+        watch,
+    } = useForm<FormData>();
+
+    const onSubmit = (data: FormData) => {
+        signUp({
+            email: data.email,
+            password: data.password,
+            firstName: data.firstName,
+            lastName: data.lastName,
         });
     };
+
+    const password = watch("password");
 
     return (
         <ThemeProvider theme={defaultTheme}>
@@ -64,43 +64,66 @@ export function SignUp() {
                     <Box
                         component="form"
                         noValidate
-                        onSubmit={handleSubmit}
+                        onSubmit={handleSubmit(onSubmit)}
                         sx={{ mt: 3 }}
                     >
                         <Grid container spacing={2}>
                             <Grid item xs={12} sm={6}>
                                 <TextField
                                     autoComplete="given-name"
-                                    name="firstName"
-                                    required
+                                    {...register("firstName", {
+                                        required: "First name is required",
+                                    })}
                                     fullWidth
                                     id="firstName"
                                     label="First Name"
                                     autoFocus
+                                    error={!!errors.firstName}
+                                    helperText={errors.firstName?.message}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={6}>
                                 <TextField
+                                    {...register("lastName", {
+                                        required: "Last name is required",
+                                    })}
                                     required
                                     fullWidth
                                     id="lastName"
                                     label="Last Name"
-                                    name="lastName"
                                     autoComplete="family-name"
+                                    error={!!errors.lastName}
+                                    helperText={errors.lastName?.message}
                                 />
                             </Grid>
                             <Grid item xs={12}>
                                 <TextField
+                                    {...register("email", {
+                                        required: "Email is required",
+                                        pattern: {
+                                            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                            message: "Email is not valid",
+                                        },
+                                    })}
                                     required
                                     fullWidth
                                     id="email"
                                     label="Email Address"
-                                    name="email"
                                     autoComplete="email"
+                                    error={!!errors.email}
+                                    helperText={errors.email?.message}
                                 />
                             </Grid>
                             <Grid item xs={12}>
                                 <TextField
+                                    {...register("password", {
+                                        required: "Password is required",
+                                        minLength: {
+                                            value: 6,
+                                            message:
+                                                "Password must be at least 6 characters long",
+                                        },
+                                    })}
                                     required
                                     fullWidth
                                     name="password"
@@ -108,6 +131,28 @@ export function SignUp() {
                                     type="password"
                                     id="password"
                                     autoComplete="new-password"
+                                    error={!!errors.password}
+                                    helperText={errors.password?.message}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    {...register("confirmPassword", {
+                                        required:
+                                            "Confirm password is required",
+                                        validate: (value) =>
+                                            value === password ||
+                                            "Passwords must match",
+                                    })}
+                                    required
+                                    fullWidth
+                                    name="confirmPassword"
+                                    label="Confirm Password"
+                                    type="password"
+                                    id="confirmPassword"
+                                    autoComplete="new-password"
+                                    error={!!errors.confirmPassword}
+                                    helperText={errors.confirmPassword?.message}
                                 />
                             </Grid>
                         </Grid>
@@ -117,7 +162,7 @@ export function SignUp() {
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
                         >
-                            Sign Up
+                            Đăng kí
                         </Button>
                         <Grid container justifyContent="flex-end">
                             <Grid item>
