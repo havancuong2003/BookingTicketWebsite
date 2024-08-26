@@ -21,8 +21,12 @@ export function Login() {
         formState: { errors },
     } = useForm<FormLogin>();
 
-    const onSubmit = (data: FormLogin) => {
-        login(data);
+    const onSubmit = async (data: FormLogin) => {
+        const token = await login(data);
+        console.log("token", token);
+
+        localStorage.setItem("accessToken", token);
+        window.location.href = "/";
     };
 
     return (
