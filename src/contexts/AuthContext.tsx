@@ -22,41 +22,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
     const isAuthenticated = !!accessToken;
 
-    useEffect(() => {
-        if (accessToken) {
-            const fetchUserInfo = async () => {
-                try {
-                    const response = await fetch(
-                        "https://www.googleapis.com/oauth2/v3/userinfo",
-                        {
-                            headers: {
-                                Authorization: `Bearer ${accessToken}`,
-                            },
-                        }
-                    );
+    // useEffect(() => {
+    //     if (accessToken) {
+    //         const fetchUserInfo = async () => {
+    //             try {
+    //                 const response = await fetch(
+    //                     "https://www.googleapis.com/oauth2/v3/userinfo",
+    //                     {
+    //                         headers: {
+    //                             Authorization: `Bearer ${accessToken}`,
+    //                         },
+    //                     }
+    //                 );
 
-                    if (response.ok) {
-                        const userInfo = await response.json();
-                        setUserName(userInfo.name);
-                    } else {
-                        console.error(
-                            "Failed to fetch user info:",
-                            await response.text()
-                        );
-                    }
-                } catch (error) {
-                    console.error("Error fetching user info:", error);
-                }
-            };
+    //                 if (response.ok) {
+    //                     const userInfo = await response.json();
+    //                     setUserName(userInfo.name);
+    //                 } else {
+    //                     console.error(
+    //                         "Failed to fetch user info:",
+    //                         await response.text()
+    //                     );
+    //                 }
+    //             } catch (error) {
+    //                 console.error("Error fetching user info:", error);
+    //             }
+    //         };
 
-            fetchUserInfo();
-        }
-    }, [accessToken]);
+    //         fetchUserInfo();
+    //     }
+    // }, [accessToken]);
 
     const logout = () => {
         setUserName("");
         setAccessToken(null);
         localStorage.removeItem("accessToken");
+        window.location.href = "/login";
     };
 
     return (
