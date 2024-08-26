@@ -13,6 +13,8 @@ import {
     SignUp,
     Support,
     Voucher,
+    ListCinema,
+    AddNewCinema,
 } from "./pages";
 import { Layout } from "./layout";
 
@@ -93,19 +95,21 @@ const router = createBrowserRouter([
             </PrivateRoute>
         ),
     },
+
     {
         path: "/admin/addcinema",
         element: (
             <PrivateRoute>
-                <AddNewMovie />
+                <AddNewCinema />
             </PrivateRoute>
         ),
     },
+
     {
         path: "/admin/listcinema",
         element: (
             <PrivateRoute>
-                <ListMovie />
+                <ListCinema />
             </PrivateRoute>
         ),
     },
