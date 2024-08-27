@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 type Movie = {
     id: number;
@@ -28,7 +28,6 @@ export const ListMovie = () => {
 
         fetchData();
     }, []);
-    console.log("movies", movies);
 
     return (
         <div>

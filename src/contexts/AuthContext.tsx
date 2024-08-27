@@ -1,11 +1,9 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
+import React, { createContext, useState, useContext } from "react";
 
 // Tạo AuthContext
 interface AuthContextProps {
-    userName: string;
     accessToken: string | null;
     isAuthenticated: boolean;
-    setUserName: (name: string) => void;
     setAccessToken: (token: string) => void;
     logout: () => void;
 }
@@ -15,46 +13,14 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     children,
 }) => {
-    const [userName, setUserName] = useState<string>("");
     const [accessToken, setAccessToken] = useState<string | null>(
         localStorage.getItem("accessToken")
     );
 
-    const isAuthenticated = !!accessToken;
-
-    // useEffect(() => {
-    //     if (accessToken) {
-    //         const fetchUserInfo = async () => {
-    //             try {
-    //                 const response = await fetch(
-    //                     "https://www.googleapis.com/oauth2/v3/userinfo",
-    //                     {
-    //                         headers: {
-    //                             Authorization: `Bearer ${accessToken}`,
-    //                         },
-    //                     }
-    //                 );
-
-    //                 if (response.ok) {
-    //                     const userInfo = await response.json();
-    //                     setUserName(userInfo.name);
-    //                 } else {
-    //                     console.error(
-    //                         "Failed to fetch user info:",
-    //                         await response.text()
-    //                     );
-    //                 }
-    //             } catch (error) {
-    //                 console.error("Error fetching user info:", error);
-    //             }
-    //         };
-
-    //         fetchUserInfo();
-    //     }
-    // }, [accessToken]);
+    const isAuthenticated =
+        accessToken && accessToken !== "null" ? true : false;
 
     const logout = () => {
-        setUserName("");
         setAccessToken(null);
         localStorage.removeItem("accessToken");
         window.location.href = "/login";
@@ -63,10 +29,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     return (
         <AuthContext.Provider
             value={{
-                userName,
                 accessToken,
                 isAuthenticated,
-                setUserName,
                 setAccessToken,
                 logout,
             }}

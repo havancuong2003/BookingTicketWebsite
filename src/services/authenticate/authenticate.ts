@@ -1,5 +1,4 @@
 import axios from "axios";
-import { useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 type FormData = {
     email: string;
