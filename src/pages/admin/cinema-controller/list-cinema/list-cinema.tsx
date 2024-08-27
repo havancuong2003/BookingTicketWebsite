@@ -1,5 +1,5 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
+import { listCinema } from "../../../../services";
 
 type Cinema = {
     cinemaId: number;
@@ -14,19 +14,10 @@ export const ListCinema = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            try {
-                const response = await axios.get(
-                    `${import.meta.env.VITE_BACKEND_URL}/cinema/getAll`
-                );
-                setCinemas(response.data);
-            } catch (error) {
-                console.error(error);
-            }
+            setCinemas(await listCinema());
         };
-
         fetchData();
-    }, []);
-    console.log("cinema:", cinemas);
+    }, [cinemas]);
 
     return (
         <div>

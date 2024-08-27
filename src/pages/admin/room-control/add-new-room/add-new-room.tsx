@@ -1,9 +1,9 @@
 import { Button, TextField } from "@mui/material";
 import axios from "axios";
-import { map } from "ramda";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { createRoom, listCinema } from "../../../../services";
 type FormData = {
     roomCodeInput: string;
     cinemaIDInput: number;
@@ -18,14 +18,7 @@ export const AddNewRoom = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            try {
-                const response = await axios.get(
-                    `${import.meta.env.VITE_BACKEND_URL}/cinema/getAll`
-                );
-                setCinemas(response.data);
-            } catch (error) {
-                console.error(error);
-            }
+            setCinemas(await listCinema());
         };
 
         fetchData();
@@ -40,17 +33,7 @@ export const AddNewRoom = () => {
             cinemaId: Number(data.cinemaIDInput),
         };
 
-        try {
-            const response = await axios.post(
-                `${import.meta.env.VITE_BACKEND_URL}/room/create`,
-                roomData
-            );
-            console.log("Room added successfully:", response.data);
-            navigate("/admin/room/listroom");
-        } catch (error) {
-            console.log(roomData);
-            console.error("Error adding room:", error, roomData);
-        }
+        createRoom(roomData, navigate);
     };
 
     return (

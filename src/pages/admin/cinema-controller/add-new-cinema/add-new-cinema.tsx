@@ -1,7 +1,7 @@
 import { Button, TextField } from "@mui/material";
-import axios from "axios";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { createCinema } from "../../../../services";
 type FormData = {
     name: string;
     location: string;
@@ -17,19 +17,7 @@ export const AddNewCinema = () => {
             location: data.location,
             totalScreens: Number(data.totalScreens),
         };
-
-        try {
-            const response = await axios.post(
-                `${import.meta.env.VITE_BACKEND_URL}/cinema/create`,
-                cinemaData
-            );
-            console.log("Cinema added successfully:", response.data);
-            navigate("/admin/cinema/listcinema");
-        } catch (error) {
-            console.log(cinemaData);
-
-            console.error("Error adding cinema:", error, cinemaData);
-        }
+        createCinema(cinemaData, navigate);
     };
 
     return (

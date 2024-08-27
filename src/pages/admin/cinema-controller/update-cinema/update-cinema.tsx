@@ -1,8 +1,8 @@
 import { Button, TextField } from "@mui/material";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
+import { detailCinema, updateCinema } from "../../../../services";
 
 type CinemaDetails = {
     cinemaId: number;
@@ -18,24 +18,17 @@ type FormData = {
     totalScreensUpdate: number;
 };
 export const UpdateCinema = () => {
-    const [cinemadetails, setCinemasDetails] = useState<CinemaDetails>();
+    const [cinemadetails, SetCinemaDetails] = useState<CinemaDetails>();
     const id = useParams().id;
-    console.log(id);
 
     useEffect(() => {
         const fetchData = async () => {
-            try {
-                const response = await axios.get(
-                    `${import.meta.env.VITE_BACKEND_URL}/cinema/details/${id}`
-                );
-                setCinemasDetails(response.data);
-            } catch (error) {
-                console.error(error);
-            }
+            const data = await detailCinema(id);
+            SetCinemaDetails(data);
         };
-
         fetchData();
-    }, [id]);
+    }, []);
+
     const { register, handleSubmit } = useForm<FormData>();
     const navigate = useNavigate();
 
@@ -45,30 +38,19 @@ export const UpdateCinema = () => {
             location: data.locationUpdate,
             totalScreens: Number(data.totalScreensUpdate),
         };
-
-        try {
-            if (cinemaData.name == "") {
-                cinemaData.name = cinemadetails?.name ?? "";
-            }
-            if (cinemaData.location == "") {
-                cinemaData.location = cinemadetails?.location ?? "";
-            }
-            if (
-                Number.isNaN(cinemaData.totalScreens) ||
-                Number(cinemaData.totalScreens) == 0
-            ) {
-                cinemaData.totalScreens = cinemadetails?.totalScreens ?? 0;
-            }
-            const response = await axios.put(
-                `${import.meta.env.VITE_BACKEND_URL}/cinema/update/${id}`,
-                cinemaData
-            );
-            console.log("Cinema updated successfully:", response.data);
-            navigate("/admin/cinema/listcinema");
-        } catch (error) {
-            console.log(cinemaData);
-            console.error("Error updated cinema:", error, cinemaData);
+        if (cinemaData.name == "") {
+            cinemaData.name = cinemadetails?.name ?? "";
         }
+        if (cinemaData.location == "") {
+            cinemaData.location = cinemadetails?.location ?? "";
+        }
+        if (
+            Number.isNaN(cinemaData.totalScreens) ||
+            Number(cinemaData.totalScreens) == 0
+        ) {
+            cinemaData.totalScreens = cinemadetails?.totalScreens ?? 0;
+        }
+        updateCinema(id, cinemaData, navigate);
     };
     return (
         <div>

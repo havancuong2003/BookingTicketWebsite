@@ -3,6 +3,8 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
+import { detailRoom, listCinema, updateRoom } from "../../../../services";
+import { update } from "ramda";
 
 type Rooms = {
     roomId: number;
@@ -24,37 +26,22 @@ export const UpdateRoom = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            try {
-                const response = await axios.get(
-                    `${import.meta.env.VITE_BACKEND_URL}/cinema/getAll`
-                );
-                setCinemas(response.data);
-            } catch (error) {
-                console.error(error);
-            }
+            setCinemas(await listCinema());
         };
 
         fetchData();
-    }, []);
+    }, [cinemas]);
 
     const [roomdetails, setRoomsDetails] = useState<Rooms>();
-    const id = useParams().id;
-    console.log(id);
+    const id = Number(useParams().id);
 
     useEffect(() => {
         const fetchData = async () => {
-            try {
-                const response = await axios.get(
-                    `${import.meta.env.VITE_BACKEND_URL}/room/details/${id}`
-                );
-                setRoomsDetails(response.data);
-            } catch (error) {
-                console.error(error);
-            }
+            setRoomsDetails(await detailRoom(id));
         };
 
         fetchData();
-    }, [id]);
+    }, [roomdetails]);
     const { register, handleSubmit } = useForm<FormData>();
     const navigate = useNavigate();
 
@@ -63,28 +50,14 @@ export const UpdateRoom = () => {
             roomCode: data.roomCodeUpdate,
             cinemaId: Number(data.cinemaIdUpdate),
         };
-
-        try {
-            if (roomData.roomCode == "") {
-                roomData.roomCode = roomdetails?.roomCode ?? "";
-            }
-
-            if (
-                Number.isNaN(roomData.cinemaId) ||
-                Number(roomData.cinemaId) == 0
-            ) {
-                roomData.cinemaId = roomdetails?.cinemaId ?? 0;
-            }
-            const response = await axios.put(
-                `${import.meta.env.VITE_BACKEND_URL}/room/update/${id}`,
-                roomData
-            );
-            console.log("room updated successfully:", response.data);
-            navigate("/admin/room/listroom");
-        } catch (error) {
-            console.log(roomData);
-            console.error("Error updated room:", error, roomData);
+        if (roomData.roomCode == "") {
+            roomData.roomCode = roomdetails?.roomCode ?? "";
         }
+
+        if (Number.isNaN(roomData.cinemaId) || Number(roomData.cinemaId) == 0) {
+            roomData.cinemaId = roomdetails?.cinemaId ?? 0;
+        }
+        updateRoom(roomData, id, navigate);
     };
     return (
         <div>

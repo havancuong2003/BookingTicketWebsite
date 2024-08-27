@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { listRoom } from "../../../../services";
 
 type Room = {
     roomId: number;
@@ -12,19 +13,10 @@ export const ListRoom = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            try {
-                const response = await axios.get(
-                    `${import.meta.env.VITE_BACKEND_URL}/room/getAll`
-                );
-                setRooms(response.data);
-            } catch (error) {
-                console.error(error);
-            }
+            setRooms(await listRoom());
         };
-
         fetchData();
-    }, []);
-    console.log("room:", rooms);
+    }, [rooms]);
 
     return (
         <div>
