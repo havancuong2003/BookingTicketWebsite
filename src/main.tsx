@@ -22,9 +22,8 @@ import {
 } from "./pages";
 import { Layout } from "./layout";
 
-import { AuthProvider } from "./contexts";
+import { AuthProvider, PrivateRoute } from "./contexts";
 import { NotFound } from "./components";
-import PrivateRoute from "./contexts/PrivateRoute";
 
 const router = createBrowserRouter([
     {

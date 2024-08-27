@@ -23,7 +23,7 @@ export function Login() {
 
     const onSubmit = async (data: FormLogin) => {
         const token = await login(data);
-        console.log("token", token);
+        console.log("token sfsdfsdfsdfd", token);
 
         localStorage.setItem("accessToken", token);
         window.location.href = "/";

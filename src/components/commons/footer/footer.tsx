@@ -1,4 +1,18 @@
 export function Footer() {
+    const technologies = [
+        "Vite - React - TypeScript",
+        "NestJS",
+        "Prisma",
+        "Docker",
+        "PostgreSQL",
+        "Github",
+        // Thêm nhiều công nghệ khác ở đây...
+    ];
+
+    // Chia danh sách thành hai nửa
+    const middleIndex = Math.ceil(technologies.length / 2);
+    const firstHalf = technologies.slice(0, middleIndex);
+    const secondHalf = technologies.slice(middleIndex);
     return (
         <footer className="bg-neutral-300 text-center text-neutral-900 dark:bg-neutral-600 dark:text-neutral-200 lg:text-left">
             {/* <!-- Main container div: holds the entire content of the footer, including four sections (TW Elements, Products, Useful links, and Contact), with responsive styling and appropriate padding/margins. --> */}
@@ -8,29 +22,32 @@ export function Footer() {
 
                     {/* <!-- Products section --> */}
                     <div className="">
-                        <h6 className="mb-4 flex justify-center font-semibold uppercase md:justify-center">
+                        <h1 className="mb-4 text-center font-semibold uppercase">
                             Technologies
-                        </h6>
-                        <p className="mb-4 text-center">
-                            <a className="text-neutral-900 dark:text-neutral-200">
-                                Vite - React - TypeScript
-                            </a>
-                        </p>
-                        <p className="mb-4 text-center">
-                            <a className="text-neutral-900 dark:text-neutral-200">
-                                NestJS
-                            </a>
-                        </p>
-                        <p className="mb-4 text-center">
-                            <a className="text-neutral-900 dark:text-neutral-200">
-                                PostgreSQL
-                            </a>
-                        </p>
-                        <p className="mb-4 text-center">
-                            <a className="text-neutral-900 dark:text-neutral-200">
-                                Github
-                            </a>
-                        </p>
+                        </h1>
+                        <div className="grid grid-cols-2 gap-x-12">
+                            {/* Nửa đầu, sát phải */}
+                            <div className="text-right">
+                                {firstHalf.map((tech, index) => (
+                                    <p key={index} className="mb-4">
+                                        <a className="text-neutral-900 dark:text-neutral-200">
+                                            {tech}
+                                        </a>
+                                    </p>
+                                ))}
+                            </div>
+
+                            {/* Nửa sau, sát trái */}
+                            <div className="text-left">
+                                {secondHalf.map((tech, index) => (
+                                    <p key={index} className="mb-4">
+                                        <a className="text-neutral-900 dark:text-neutral-200">
+                                            {tech}
+                                        </a>
+                                    </p>
+                                ))}
+                            </div>
+                        </div>
                     </div>
 
                     {/* <!-- Contact section --> */}

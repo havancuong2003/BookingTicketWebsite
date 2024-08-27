@@ -6,7 +6,6 @@ import logo from "../../../assets/img/logo.png";
 import abc from "../../../assets/img/ABC.png";
 import { Movie } from "..";
 import { getAccessToken, userInfo } from "../../../services";
-import { getUserInfoFromToken } from "../../../utils/decode-jwt";
 
 export const LandingPage = () => {
     const images = [banner1, banner2, banner3, logo, abc];
@@ -14,21 +13,26 @@ export const LandingPage = () => {
     const [userName, setUserName] = useState("");
     const intervalRef = useRef<number | null>(null);
     const timeoutRef = useRef<number | null>(null);
-    // const userInfo = getUserInfoFromToken();
-    // console.log("userInfo", userInfo);
 
     useEffect(() => {
         const fetchTokenAndUserInfo = async () => {
             try {
                 // Fetch and store token
                 const token = await getAccessToken();
+                console.log("token here", token);
+
                 localStorage.setItem("accessToken", token.accessToken);
 
                 const accessToken = localStorage.getItem("accessToken");
-                if (accessToken) {
+
+                if (accessToken && accessToken !== "null") {
+                    console.log("in");
+
                     const user = await userInfo(accessToken);
+                    console.log("user here", user);
+
                     if (user) {
-                        setUserName(user.firstName); // Assuming `user` has `firstName`
+                        setUserName(user.firstName);
                     } else {
                         console.error("Failed to get user info");
                     }
@@ -95,7 +99,11 @@ export const LandingPage = () => {
     return (
         <>
             <div className="relative w-full md:w-11/12 h-[300px] sm:h-[500px] md:h-[600px] mt-[150px] mb-[150px] mx-auto overflow-hidden">
-                <h1>Hello {userName}</h1>
+                {userName && (
+                    <h1 className="text-3xl font-bold text-center">
+                        HELLO {userName}
+                    </h1>
+                )}
                 <div
                     className="flex transition-transform duration-500 ease-in-out"
                     style={{ transform: `translateX(-${currentIndex * 100}%)` }}
