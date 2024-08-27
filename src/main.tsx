@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import {
     AddNewMovie,
@@ -15,12 +14,12 @@ import {
     Support,
     Voucher,
 } from "./pages";
-
 import { Layout } from "./layout";
+import { AuthProvider } from "./contexts";
 
-import { AuthProvider, PrivateRoute } from "./contexts";
 import { NotFound } from "./components";
-
+import PrivateRoute from "./routes/privateRoutes";
+import "./index.css";
 const router = createBrowserRouter([
     {
         path: "/",
@@ -57,9 +56,11 @@ const router = createBrowserRouter([
     {
         path: "/voucher",
         element: (
-            <Layout>
-                <Voucher />
-            </Layout>
+            <PrivateRoute roleUser="user">
+                <Layout>
+                    <Voucher />
+                </Layout>
+            </PrivateRoute>
         ),
     },
     {
@@ -73,24 +74,30 @@ const router = createBrowserRouter([
     {
         path: "/support",
         element: (
-            <Layout>
-                <Support />
-            </Layout>
+            <PrivateRoute roleUser="user">
+                <Layout>
+                    <Support />
+                </Layout>
+            </PrivateRoute>
         ),
     },
     {
         path: "/admin/addnewmovie",
         element: (
-            <PrivateRoute>
-                <AddNewMovie />
+            <PrivateRoute roleUser="admin">
+                <Layout>
+                    <AddNewMovie />
+                </Layout>
             </PrivateRoute>
         ),
     },
     {
         path: "/admin/listmovie",
         element: (
-            <PrivateRoute>
-                <ListMovie />
+            <PrivateRoute roleUser="admin">
+                <Layout>
+                    <ListMovie />
+                </Layout>
             </PrivateRoute>
         ),
     },
@@ -103,6 +110,7 @@ const router = createBrowserRouter([
         element: <NotFound />,
     },
 ]);
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
         <AuthProvider>

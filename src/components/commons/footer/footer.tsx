@@ -104,7 +104,7 @@ export function Footer() {
                                     clipRule="evenodd"
                                 />
                             </svg>
-                            + 0383 130 744
+                            + 0383 130 744 ( Mr. Cuong )
                         </p>
                         <p className="mb-4 flex items-center justify-center md:justify-start">
                             <svg
@@ -119,7 +119,7 @@ export function Footer() {
                                     clipRule="evenodd"
                                 />
                             </svg>
-                            + 0988 762 923
+                            + 0988 762 923 ( Mr. Vo )
                         </p>
                     </div>
                 </div>
