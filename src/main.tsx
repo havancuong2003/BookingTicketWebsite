@@ -4,6 +4,7 @@ import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import {
     AddNewMovie,
+    Dashboard,
     LandingPage,
     ListMovie,
     Login,
@@ -14,6 +15,7 @@ import {
     Support,
     Voucher,
 } from "./pages";
+
 import { Layout } from "./layout";
 
 import { AuthProvider, PrivateRoute } from "./contexts";
@@ -91,6 +93,10 @@ const router = createBrowserRouter([
                 <ListMovie />
             </PrivateRoute>
         ),
+    },
+    {
+        path: "/dashboard",
+        element: <Dashboard />,
     },
     {
         path: "*",
