@@ -13,6 +13,7 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import logo from "../../../assets/img/logo.png";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../../contexts";
 
 const pages: Pages = {
     "Lịch chiếu rạp": "/schedule",
@@ -21,11 +22,11 @@ const pages: Pages = {
     "Ưu đãi": "/offer",
     "Hỗ trợ": "/support",
 };
-const settings = ["Trang cá nhân", "Thành Viên", "Đăng xuất"];
 type Pages = {
     [key: string]: string; // Khai báo kiểu rõ ràng cho đối tượng pages
 };
 export function Header() {
+    const { logout } = useAuth();
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
         null
     );
@@ -214,7 +215,7 @@ export function Header() {
                             open={Boolean(anchorElUser)}
                             onClose={handleCloseUserMenu}
                         >
-                            {settings.map((setting) => (
+                            {/* {settings.map((setting) => (
                                 <MenuItem
                                     key={setting}
                                     onClick={handleCloseUserMenu}
@@ -223,7 +224,22 @@ export function Header() {
                                         {setting}
                                     </Typography>
                                 </MenuItem>
-                            ))}
+                            ))} */}
+                            <MenuItem onClick={handleCloseUserMenu}>
+                                <Typography textAlign="center">
+                                    <span>Trang cá nhân</span>
+                                </Typography>
+                            </MenuItem>
+                            <MenuItem onClick={handleCloseUserMenu}>
+                                <Typography textAlign="center">
+                                    <span>Thành viên</span>
+                                </Typography>
+                            </MenuItem>
+                            <MenuItem onClick={handleCloseUserMenu}>
+                                <Typography textAlign="center" onClick={logout}>
+                                    <span>Đăng xuất</span>
+                                </Typography>
+                            </MenuItem>
                         </Menu>
                     </Box>
                 </Toolbar>

@@ -8,8 +8,8 @@ import {
     FormControl,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { createMovie, getIDMovieAfterUpload } from "../../../../services";
 
 type FormData = {
     title: string;
@@ -19,7 +19,6 @@ type FormData = {
     releaseDate: string;
     rating: number;
     status: string;
-
     duration: number;
     createdAt: string;
     updatedAt: string;
@@ -52,27 +51,32 @@ export const AddNewMovie = () => {
         const formData = new FormData();
         formData.append("video", file);
 
-        try {
-            const response = await fetch(`http://localhost:3000/auth/upload`, {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
-                body: formData,
-            });
+        const videoID = await getIDMovieAfterUpload(accessToken, formData);
+        return videoID;
+        // try {
+        //     const response = await fetch(
+        //         `${import.meta.env.VITE_BACKEND_URL}/auth/upload`,
+        //         {
+        //             method: "POST",
+        //             headers: {
+        //                 Authorization: `Bearer ${accessToken}`,
+        //             },
+        //             body: formData,
+        //         }
+        //     );
 
-            if (response.ok) {
-                const data = await response.json();
-                console.log("Video uploaded successfully:", data);
-                return data; // Return video ID
-            } else {
-                console.error("Failed to upload video:", await response.text());
-                return null;
-            }
-        } catch (error) {
-            console.error("Error uploading video:", error);
-            return null;
-        }
+        //     if (response.ok) {
+        //         const data = await response.json();
+        //         console.log("Video uploaded successfully:", data);
+        //         return data; // Return video ID
+        //     } else {
+        //         console.error("Failed to upload video:", await response.text());
+        //         return null;
+        //     }
+        // } catch (error) {
+        //     console.error("Error uploading video:", error);
+        //     return null;
+        // }
     };
 
     const onSubmit = async (data: FormData) => {
@@ -80,7 +84,6 @@ export const AddNewMovie = () => {
             console.error("No video file selected.");
             return;
         }
-        console.log("data", data);
 
         const videoId = await uploadVideoToGoogleDrive(selectedFile);
         if (!videoId) {
@@ -101,16 +104,17 @@ export const AddNewMovie = () => {
             trailer: videoId.id,
         };
 
-        try {
-            const response = await axios.post(
-                "http://localhost:3000/movie/create",
-                movieData
-            );
-            console.log("Movie added successfully:", response.data);
-            navigate("/admin/listmovie");
-        } catch (error) {
-            console.error("Error adding movie:", error);
-        }
+        createMovie(movieData, navigate);
+        // try {
+        //     const response = await axios.post(
+        //         `${import.meta.env.VITE_BACKEND_URL}/movie/create`,
+        //         movieData
+        //     );
+        //     console.log("Movie added successfully:", response.data);
+        //     navigate("/admin/listmovie");
+        // } catch (error) {
+        //     console.error("Error adding movie:", error);
+        // }
     };
 
     return (

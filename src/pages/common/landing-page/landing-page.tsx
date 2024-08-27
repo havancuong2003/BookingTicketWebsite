@@ -1,27 +1,51 @@
 import { useState, useEffect, useRef } from "react";
-
-// Import ảnh từ thư mục assets
 import banner1 from "../../../assets/img/banner1.jpg";
 import banner2 from "../../../assets/img/banner2.jpg";
 import banner3 from "../../../assets/img/banner3.jpg";
 import logo from "../../../assets/img/logo.png";
 import abc from "../../../assets/img/ABC.png";
 import { Movie } from "..";
-import { useParams } from "react-router-dom";
+import { getAccessToken, userInfo } from "../../../services";
+
 export const LandingPage = () => {
     const images = [banner1, banner2, banner3, logo, abc];
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [userName, setUserName] = useState("");
     const intervalRef = useRef<number | null>(null);
     const timeoutRef = useRef<number | null>(null);
-    const accessToken = new URLSearchParams(window.location.search).get(
-        "accessToken"
-    );
-    localStorage.setItem("accessToken", accessToken || "");
-    const [userName, setUserName] = useState("");
-    console.log("param", accessToken);
 
     useEffect(() => {
+        const fetchTokenAndUserInfo = async () => {
+            try {
+                // Fetch and store token
+                const token = await getAccessToken();
+                console.log("token here", token);
+
+                localStorage.setItem("accessToken", token.accessToken);
+
+                const accessToken = localStorage.getItem("accessToken");
+
+                if (accessToken && accessToken !== "null") {
+                    console.log("in");
+
+                    const user = await userInfo(accessToken);
+                    console.log("user here", user);
+
+                    if (user) {
+                        setUserName(user.firstName);
+                    } else {
+                        console.error("Failed to get user info");
+                    }
+                }
+            } catch (error) {
+                console.error("Error fetching token or user info:", error);
+            }
+        };
+
+        fetchTokenAndUserInfo();
+
         startAutoSlide();
+
         return () => {
             stopAutoSlide();
             if (timeoutRef.current !== null) {
@@ -29,39 +53,6 @@ export const LandingPage = () => {
             }
         };
     }, []);
-
-    useEffect(() => {
-        const fetchUserInfo = async () => {
-            if (accessToken) {
-                try {
-                    const response = await fetch(
-                        "https://www.googleapis.com/oauth2/v3/userinfo",
-                        {
-                            headers: {
-                                Authorization: `Bearer ${accessToken}`,
-                            },
-                        }
-                    );
-
-                    if (response.ok) {
-                        const userInfo = await response.json();
-                        console.log("userInfo", userInfo);
-
-                        setUserName(userInfo.name); // Giả định là Google trả về trường 'name'
-                    } else {
-                        console.error(
-                            "Failed to fetch user info:",
-                            await response.text()
-                        );
-                    }
-                } catch (error) {
-                    console.error("Error fetching user info:", error);
-                }
-            }
-        };
-
-        fetchUserInfo();
-    }, [accessToken]);
 
     const startAutoSlide = () => {
         stopAutoSlide();
@@ -92,11 +83,7 @@ export const LandingPage = () => {
 
     const handleButtonClick = (direction: "prev" | "next") => {
         stopAutoSlide();
-        if (direction === "prev") {
-            handlePrevImage();
-        } else {
-            handleNextImage();
-        }
+        direction === "prev" ? handlePrevImage() : handleNextImage();
         restartAutoSlide();
     };
 
@@ -111,13 +98,15 @@ export const LandingPage = () => {
 
     return (
         <>
-            <div className="relative w-full md:w-11/12 h-[300px] sm:h-[500px] md:h-[600px] mt-[150px] mb-[150px] mx-auto overflow-hidden ">
-                <h1>Hello {userName}</h1>
+            <div className="relative w-full md:w-11/12 h-[300px] sm:h-[500px] md:h-[600px] mt-[150px] mb-[150px] mx-auto overflow-hidden">
+                {userName && (
+                    <h1 className="text-3xl font-bold text-center">
+                        HELLO {userName}
+                    </h1>
+                )}
                 <div
                     className="flex transition-transform duration-500 ease-in-out"
-                    style={{
-                        transform: `translateX(-${currentIndex * 100}%)`,
-                    }}
+                    style={{ transform: `translateX(-${currentIndex * 100}%)` }}
                 >
                     {images.map((image, index) => (
                         <img
@@ -136,7 +125,7 @@ export const LandingPage = () => {
                 </button>
                 <button
                     onClick={() => handleButtonClick("next")}
-                    className="absolute top-1/3 xs:top-[100px] sm:top-1/2  right-0 transform -translate-y-1/2 p-2 bg-gray-500 text-white rounded-full"
+                    className="absolute top-1/3 xs:top-[100px] sm:top-1/2 right-0 transform -translate-y-1/2 p-2 bg-gray-500 text-white rounded-full"
                 >
                     &gt;
                 </button>

@@ -1,33 +1,32 @@
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { FcGoogle } from "react-icons/fc";
+import { login, loginGG } from "../../../services";
+import { useForm } from "react-hook-form";
+
+type FormLogin = {
+    email: string;
+    password: string;
+};
 
 export function Login() {
-    const handleSubmit = (event: any) => {
-        event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        console.log({
-            email: data.get("email"),
-            password: data.get("password"),
-        });
-    };
-    console.log(import.meta.env.BACKEND_URL);
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<FormLogin>();
 
-    const login = async () => {
-        try {
-            // Chuyển hướng người dùng đến backend để bắt đầu quy trình xác thực với Google
-            console.log("abads");
+    const onSubmit = async (data: FormLogin) => {
+        const token = await login(data);
+        console.log("token sfsdfsdfsdfd", token);
 
-            window.location.href = `http://localhost:3000/auth/google`;
-        } catch (error) {
-            console.error("Login Failed:", error);
-        }
+        localStorage.setItem("accessToken", token);
+        window.location.href = "/";
     };
 
     return (
@@ -45,7 +44,7 @@ export function Login() {
                 </Typography>
                 <Box
                     component="form"
-                    onSubmit={handleSubmit}
+                    onSubmit={handleSubmit(onSubmit)}
                     noValidate
                     sx={{ mt: 1 }}
                 >
@@ -55,23 +54,30 @@ export function Login() {
                         fullWidth
                         id="email"
                         label="Email Address"
-                        name="email"
                         autoComplete="email"
                         autoFocus
+                        {...register("email", {
+                            required: "Email is required",
+                        })}
+                        error={!!errors.email}
+                        helperText={errors.email?.message}
                     />
                     <TextField
                         margin="normal"
                         required
                         fullWidth
-                        name="password"
                         label="Password"
                         type="password"
                         id="password"
                         autoComplete="current-password"
+                        {...register("password", {
+                            required: "Password is required",
+                        })}
+                        error={!!errors.password}
+                        helperText={errors.password?.message}
                     />
-
                     <Button
-                        type="submit"
+                        type="button"
                         fullWidth
                         variant="text"
                         sx={{
@@ -80,7 +86,7 @@ export function Login() {
                             color: "black",
                             border: "1px solid black",
                         }}
-                        onClick={login}
+                        onClick={loginGG}
                     >
                         <FcGoogle size={30} />{" "}
                         <span className="ml-10">Đăng nhập với Google</span>
