@@ -8,6 +8,7 @@ import Container from "@mui/material/Container";
 import { FcGoogle } from "react-icons/fc";
 import { login, loginGG } from "../../../services";
 import { useForm } from "react-hook-form";
+import Cookies from "js-cookie"; // Import js-cookie
 
 type FormLogin = {
     email: string;
@@ -24,8 +25,8 @@ export function Login() {
     const onSubmit = async (data: FormLogin) => {
         const token = await login(data);
         console.log("token sfsdfsdfsdfd", token);
-
-        localStorage.setItem("accessToken", token);
+        Cookies.set("role", token.role, { expires: 7 }); // Expiry time in days
+        localStorage.setItem("accessToken", token.token);
         window.location.href = "/";
     };
 

@@ -57,7 +57,7 @@ export const login = async (data: FormLogin) => {
         );
 
         console.log("response herre", response);
-        return response?.data?.user.token;
+        return response?.data?.user;
     } catch (error) {
         if (axios.isAxiosError(error)) {
             alert(error.response?.data.message);

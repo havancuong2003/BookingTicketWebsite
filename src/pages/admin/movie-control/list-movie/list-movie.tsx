@@ -1,15 +1,6 @@
 import { useEffect, useState } from "react";
 import { listMovie } from "../../../../services";
-
-type Movie = {
-    id: number;
-    title: string;
-    description: string;
-    director: string;
-    actors: string;
-    releaseDate: string;
-    trailer: string;
-};
+import { Movie } from "../../../../models";
 
 export const ListMovie = () => {
     const [movies, setMovies] = useState<Movie[]>([]);

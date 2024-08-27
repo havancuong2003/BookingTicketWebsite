@@ -16,8 +16,9 @@ import {
 } from "./pages";
 import { Layout } from "./layout";
 
-import { AuthProvider, PrivateRoute } from "./contexts";
+import { AuthProvider } from "./contexts";
 import { NotFound } from "./components";
+import { withAuth } from "./hocs";
 
 const router = createBrowserRouter([
     {
@@ -79,17 +80,17 @@ const router = createBrowserRouter([
     {
         path: "/admin/addnewmovie",
         element: (
-            <PrivateRoute>
-                <AddNewMovie />
-            </PrivateRoute>
+            <Layout>
+                {React.createElement(withAuth(AddNewMovie, { role: "admin" }))}
+            </Layout>
         ),
     },
     {
         path: "/admin/listmovie",
         element: (
-            <PrivateRoute>
-                <ListMovie />
-            </PrivateRoute>
+            <Layout>
+                {React.createElement(withAuth(ListMovie, { role: "admin" }))}
+            </Layout>
         ),
     },
     {
@@ -97,6 +98,7 @@ const router = createBrowserRouter([
         element: <NotFound />,
     },
 ]);
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
         <AuthProvider>
