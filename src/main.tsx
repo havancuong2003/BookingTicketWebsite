@@ -24,6 +24,7 @@ import { Layout } from "./layout";
 
 import { AuthProvider, PrivateRoute } from "./contexts";
 import { NotFound } from "./components";
+import { AddNewScreening } from "./pages/admin/screening-control";
 
 const router = createBrowserRouter([
     {
@@ -146,6 +147,14 @@ const router = createBrowserRouter([
         element: (
             <PrivateRoute>
                 <UpdateRoom />
+            </PrivateRoute>
+        ),
+    },
+    {
+        path: "/admin/screening/addscreening",
+        element: (
+            <PrivateRoute>
+                <AddNewScreening />
             </PrivateRoute>
         ),
     },

@@ -53,3 +53,14 @@ export const listMovie = async () => {
         console.error(error);
     }
 };
+
+export const detailMovie = async (id: number) => {
+    try {
+        const response = await axios.get(
+            `${import.meta.env.VITE_BACKEND_URL}/movie/details/${id}`
+        );
+        return response.data;
+    } catch (error) {
+        console.error(error);
+    }
+};
