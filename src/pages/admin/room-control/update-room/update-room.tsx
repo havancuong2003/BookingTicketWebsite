@@ -1,10 +1,8 @@
 import { Button, TextField } from "@mui/material";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { detailRoom, listCinema, updateRoom } from "../../../../services";
-import { update } from "ramda";
 
 type Rooms = {
     roomId: number;
