@@ -105,7 +105,7 @@ export const AddNewMovie = () => {
             trailer: videoId.id,
         };
 
-        createMovie(movieData);
+        createMovie(movieData, navigate);
         // try {
         //     const response = await axios.post(
         //         `${import.meta.env.VITE_BACKEND_URL}/movie/create`,

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-const navigate = useNavigate();
+// const navigate = useNavigate();
 export const getIDMovieAfterUpload = async (
     accessToken: string,
     formData: FormData
@@ -31,7 +31,7 @@ export const getIDMovieAfterUpload = async (
     }
 };
 
-export const createMovie = async (movieData: any) => {
+export const createMovie = async (movieData: any, navigate: any) => {
     try {
         const response = await axios.post(
             `${import.meta.env.VITE_BACKEND_URL}/movie/create`,
@@ -41,5 +41,16 @@ export const createMovie = async (movieData: any) => {
         navigate("/admin/listmovie");
     } catch (error) {
         console.error("Error adding movie:", error);
+    }
+};
+
+export const listMovie = async () => {
+    try {
+        const response = await axios.get(
+            `${import.meta.env.VITE_BACKEND_URL}/movie/getAll`
+        );
+        return response.data;
+    } catch (error) {
+        console.error(error);
     }
 };

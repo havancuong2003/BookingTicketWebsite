@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { listMovie } from "../../../../services";
 
 type Movie = {
     id: number;
@@ -14,20 +15,27 @@ type Movie = {
 export const ListMovie = () => {
     const [movies, setMovies] = useState<Movie[]>([]);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get(
-                    `${import.meta.env.VITE_BACKEND_URL}/movie/getAll`
-                );
-                setMovies(response.data);
-            } catch (error) {
-                console.error(error);
-            }
-        };
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         try {
+    //             const response = await axios.get(
+    //                 `${import.meta.env.VITE_BACKEND_URL}/movie/getAll`
+    //             );
+    //             setMovies(response.data);
+    //         } catch (error) {
+    //             console.error(error);
+    //         }
+    //     };
 
-        fetchData();
-    }, []);
+    //     fetchData();
+    // }, []);
+    const listMovies = async () => {
+        const data = await listMovie();
+        setMovies(data);
+    };
+    useEffect(() => {
+        listMovies();
+    }, [movies]);
 
     return (
         <div>
