@@ -1,5 +1,4 @@
 import axios from "axios";
-import { useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 type FormData = {
     email: string;
@@ -47,16 +46,17 @@ export const login = async (data: FormLogin) => {
     console.log("data", data);
     try {
         const response = await axios.post(
-            `${import.meta.env.VITE_BACKEND_URL}/user/login`,
+            `${import.meta.env.VITE_BACKEND_URL}/auth/login`,
             data,
             {
                 headers: {
                     "Content-Type": "application/json",
                 },
+                withCredentials: true,
             }
         );
 
-        console.log("response", response);
+        console.log("response herre", response);
         return response?.data?.user.token;
     } catch (error) {
         if (axios.isAxiosError(error)) {
