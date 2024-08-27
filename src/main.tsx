@@ -15,6 +15,10 @@ import {
     Voucher,
     ListCinema,
     AddNewCinema,
+    UpdateCinema,
+    AddNewRoom,
+    ListRoom,
+    UpdateRoom,
 } from "./pages";
 import { Layout } from "./layout";
 
@@ -97,7 +101,7 @@ const router = createBrowserRouter([
     },
 
     {
-        path: "/admin/addcinema",
+        path: "/admin/cinema/addcinema",
         element: (
             <PrivateRoute>
                 <AddNewCinema />
@@ -106,10 +110,43 @@ const router = createBrowserRouter([
     },
 
     {
-        path: "/admin/listcinema",
+        path: "/admin/cinema/listcinema",
         element: (
             <PrivateRoute>
                 <ListCinema />
+            </PrivateRoute>
+        ),
+    },
+    {
+        path: "/admin/cinema/details/:id",
+        element: (
+            <PrivateRoute>
+                <UpdateCinema />
+            </PrivateRoute>
+        ),
+    },
+    {
+        path: "/admin/room/addroom",
+        element: (
+            <PrivateRoute>
+                <AddNewRoom />
+            </PrivateRoute>
+        ),
+    },
+
+    {
+        path: "/admin/room/listroom",
+        element: (
+            <PrivateRoute>
+                <ListRoom />
+            </PrivateRoute>
+        ),
+    },
+    {
+        path: "/admin/room/details/:id",
+        element: (
+            <PrivateRoute>
+                <UpdateRoom />
             </PrivateRoute>
         ),
     },

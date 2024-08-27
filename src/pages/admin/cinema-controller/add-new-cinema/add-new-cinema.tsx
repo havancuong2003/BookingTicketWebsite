@@ -24,7 +24,7 @@ export const AddNewCinema = () => {
                 cinemaData
             );
             console.log("Cinema added successfully:", response.data);
-            navigate("/admin/listcinema");
+            navigate("/admin/cinema/listcinema");
         } catch (error) {
             console.log(cinemaData);
 
