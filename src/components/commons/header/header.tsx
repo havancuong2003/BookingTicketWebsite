@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -12,7 +12,7 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import logo from "../../../assets/img/logo.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../contexts";
 
 const pages: Pages = {
@@ -22,11 +22,14 @@ const pages: Pages = {
     "Ưu đãi": "/offer",
     "Hỗ trợ": "/support",
 };
+
 type Pages = {
-    [key: string]: string; // Khai báo kiểu rõ ràng cho đối tượng pages
+    [key: string]: string;
 };
+
 export function Header() {
     const { logout } = useAuth();
+    const navigate = useNavigate();
     const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
         null
     );
@@ -37,6 +40,7 @@ export function Header() {
     const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
     };
+
     const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorElUser(event.currentTarget);
     };
@@ -47,6 +51,11 @@ export function Header() {
 
     const handleCloseUserMenu = () => {
         setAnchorElUser(null);
+    };
+
+    const handleLogout = () => {
+        logout();
+        navigate("/login"); // Call navigate after logout
     };
 
     return (
@@ -76,22 +85,6 @@ export function Header() {
                             justifyContent: { xs: "center", md: "center" },
                         }}
                     >
-                        {/* {pages.map((page) => (
-                            <Button
-                                key={page}
-                                onClick={handleCloseNavMenu}
-                                sx={{
-                                    my: 2,
-                                    color: "white",
-                                    display: { xs: "none", md: "block" },
-                                    marginLeft: { xs: 0, md: 3 },
-                                    fontWeight: "bold",
-                                    fontSize: "18px",
-                                }}
-                            >
-                                {page}
-                            </Button>
-                        ))} */}
                         {Object.keys(pages).map((page) => (
                             <Link key={page} to={pages[page]}>
                                 <Button
@@ -215,16 +208,6 @@ export function Header() {
                             open={Boolean(anchorElUser)}
                             onClose={handleCloseUserMenu}
                         >
-                            {/* {settings.map((setting) => (
-                                <MenuItem
-                                    key={setting}
-                                    onClick={handleCloseUserMenu}
-                                >
-                                    <Typography textAlign="center">
-                                        {setting}
-                                    </Typography>
-                                </MenuItem>
-                            ))} */}
                             <MenuItem onClick={handleCloseUserMenu}>
                                 <Typography textAlign="center">
                                     <span>Trang cá nhân</span>
@@ -236,7 +219,10 @@ export function Header() {
                                 </Typography>
                             </MenuItem>
                             <MenuItem onClick={handleCloseUserMenu}>
-                                <Typography textAlign="center" onClick={logout}>
+                                <Typography
+                                    textAlign="center"
+                                    onClick={handleLogout}
+                                >
                                     <span>Đăng xuất</span>
                                 </Typography>
                             </MenuItem>

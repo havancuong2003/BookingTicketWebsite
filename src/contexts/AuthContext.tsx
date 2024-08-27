@@ -1,15 +1,29 @@
-// src/contexts/AuthContext.tsx
-import React, { createContext, useState, useContext, ReactNode } from "react";
-import Cookies from "js-cookie";
+import React, {
+    createContext,
+    useState,
+    useContext,
+    ReactNode,
+    useEffect,
+} from "react";
+import { login as apiLogin, getAccessToken, userInfo } from "../services";
 
-// Định nghĩa kiểu dữ liệu cho AuthContext
+type FormLogin = {
+    email: string;
+    password: string;
+};
+
 interface AuthContextProps {
     accessToken: string | null;
     isAuthenticated: boolean;
     role: string | null;
+    userName: string | null;
     setAccessToken: (token: string) => void;
     setRole: (role: string) => void;
+    setUserName: (name: string) => void;
     logout: () => void;
+    login: (data: FormLogin, navigate: any) => Promise<void>;
+    fetchUserInfo: () => Promise<void>;
+    isLoading: boolean; // Thêm trạng thái đang tải
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -17,21 +31,64 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     children,
 }) => {
-    const [accessToken, setAccessToken] = useState<string | null>(
-        localStorage.getItem("accessToken")
-    );
-    const [role, setRole] = useState<string | null>(
-        Cookies.get("role") || null
-    );
+    const [accessToken, setAccessTokenState] = useState<string | null>(null);
+    const [role, setRoleState] = useState<string | null>(null);
+    const [userName, setUserNameState] = useState<string | null>(null);
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true); // Thêm trạng thái đang tải
 
-    const isAuthenticated = (accessToken && accessToken !== "null") || false;
+    const fetchUserInfo = async () => {
+        try {
+            const tokenData = await getAccessToken();
+            const { accessToken, role } = tokenData;
+            setAccessTokenState(accessToken);
+            setRoleState(role);
+            setIsAuthenticated(Boolean(accessToken)); // Cập nhật isAuthenticated
+
+            if (accessToken) {
+                const user = await userInfo(accessToken);
+                setUserNameState(user?.firstName || null);
+            }
+        } catch (error) {
+            console.error("Error fetching user info:", error);
+            setIsAuthenticated(false); // Đảm bảo trạng thái xác thực không đúng nếu có lỗi
+        } finally {
+            setIsLoading(false); // Đánh dấu dữ liệu đã được tải xong
+        }
+    };
+
+    useEffect(() => {
+        fetchUserInfo();
+    }, []);
+
+    const setAccessToken = (token: string) => {
+        setAccessTokenState(token);
+        setIsAuthenticated(Boolean(token)); // Cập nhật isAuthenticated khi accessToken thay đổi
+    };
+
+    const setRole = (role: string) => {
+        setRoleState(role);
+    };
+
+    const setUserName = (name: string) => {
+        setUserNameState(name);
+    };
 
     const logout = () => {
-        setAccessToken(null);
-        setRole(null);
-        localStorage.removeItem("accessToken");
-        Cookies.remove("role");
-        window.location.href = "/login";
+        setAccessTokenState(null);
+        setRoleState(null);
+        setUserNameState(null);
+        setIsAuthenticated(false); // Đảm bảo trạng thái xác thực bị gỡ bỏ khi logout
+    };
+
+    const login = async (data: FormLogin, navigate: any) => {
+        try {
+            await apiLogin(data);
+            await fetchUserInfo();
+            navigate("/");
+        } catch (error) {
+            console.error("Login failed", error);
+        }
     };
 
     return (
@@ -40,9 +97,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
                 accessToken,
                 isAuthenticated,
                 role,
+                userName,
                 setAccessToken,
                 setRole,
+                setUserName,
                 logout,
+                login,
+                fetchUserInfo,
+                isLoading, // Cung cấp trạng thái đang tải
             }}
         >
             {children}
@@ -50,7 +112,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     );
 };
 
-// Custom hook để sử dụng AuthContext
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (context === undefined) {

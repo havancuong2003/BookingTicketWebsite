@@ -5,45 +5,16 @@ import banner3 from "../../../assets/img/banner3.jpg";
 import logo from "../../../assets/img/logo.png";
 import abc from "../../../assets/img/ABC.png";
 import { Movie } from "..";
-import { getAccessToken, userInfo } from "../../../services";
+// import { useAuth } from "../../../contexts";
 
 export const LandingPage = () => {
     const images = [banner1, banner2, banner3, logo, abc];
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [userName, setUserName] = useState("");
+    // const { userName } = useAuth(); // Lấy thông tin người dùng từ AuthContext
     const intervalRef = useRef<number | null>(null);
     const timeoutRef = useRef<number | null>(null);
 
     useEffect(() => {
-        const fetchTokenAndUserInfo = async () => {
-            try {
-                // Fetch and store token
-                const token = await getAccessToken();
-                console.log("token here", token);
-
-                localStorage.setItem("accessToken", token.accessToken);
-
-                const accessToken = localStorage.getItem("accessToken");
-
-                if (accessToken && accessToken !== "null") {
-                    console.log("in");
-
-                    const user = await userInfo(accessToken);
-                    console.log("user here", user);
-
-                    if (user) {
-                        setUserName(user.firstName);
-                    } else {
-                        console.error("Failed to get user info");
-                    }
-                }
-            } catch (error) {
-                console.error("Error fetching token or user info:", error);
-            }
-        };
-
-        fetchTokenAndUserInfo();
-
         startAutoSlide();
 
         return () => {
@@ -99,11 +70,11 @@ export const LandingPage = () => {
     return (
         <>
             <div className="relative w-full md:w-11/12 h-[300px] sm:h-[500px] md:h-[600px] mt-[150px] mb-[150px] mx-auto overflow-hidden">
-                {userName && (
+                {/* {userName && (
                     <h1 className="text-3xl font-bold text-center">
                         HELLO {userName}
                     </h1>
-                )}
+                )} */}
                 <div
                     className="flex transition-transform duration-500 ease-in-out"
                     style={{ transform: `translateX(-${currentIndex * 100}%)` }}

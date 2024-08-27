@@ -1,6 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import {
     AddNewMovie,
@@ -15,13 +14,12 @@ import {
     Support,
     Voucher,
 } from "./pages";
-
 import { Layout } from "./layout";
-
 import { AuthProvider } from "./contexts";
-import { NotFound } from "./components";
-import { withAuth } from "./hocs";
 
+import { NotFound } from "./components";
+import PrivateRoute from "./routes/privateRoutes";
+import "./index.css";
 const router = createBrowserRouter([
     {
         path: "/",
@@ -58,9 +56,11 @@ const router = createBrowserRouter([
     {
         path: "/voucher",
         element: (
-            <Layout>
-                <Voucher />
-            </Layout>
+            <PrivateRoute roleUser="user">
+                <Layout>
+                    <Voucher />
+                </Layout>
+            </PrivateRoute>
         ),
     },
     {
@@ -74,25 +74,31 @@ const router = createBrowserRouter([
     {
         path: "/support",
         element: (
-            <Layout>
-                <Support />
-            </Layout>
+            <PrivateRoute roleUser="user">
+                <Layout>
+                    <Support />
+                </Layout>
+            </PrivateRoute>
         ),
     },
     {
         path: "/admin/addnewmovie",
         element: (
-            <Layout>
-                {React.createElement(withAuth(AddNewMovie, { role: "admin" }))}
-            </Layout>
+            <PrivateRoute roleUser="admin">
+                <Layout>
+                    <AddNewMovie />
+                </Layout>
+            </PrivateRoute>
         ),
     },
     {
         path: "/admin/listmovie",
         element: (
-            <Layout>
-                {React.createElement(withAuth(ListMovie, { role: "admin" }))}
-            </Layout>
+            <PrivateRoute roleUser="admin">
+                <Layout>
+                    <ListMovie />
+                </Layout>
+            </PrivateRoute>
         ),
     },
     {

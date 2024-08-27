@@ -6,9 +6,10 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { FcGoogle } from "react-icons/fc";
-import { login, loginGG } from "../../../services";
+import { loginGG } from "../../../services";
 import { useForm } from "react-hook-form";
-import Cookies from "js-cookie"; // Import js-cookie
+import { useAuth } from "../../../contexts";
+import { useNavigate } from "react-router-dom";
 
 type FormLogin = {
     email: string;
@@ -21,13 +22,10 @@ export function Login() {
         handleSubmit,
         formState: { errors },
     } = useForm<FormLogin>();
-
+    const navigate = useNavigate();
+    const { login } = useAuth();
     const onSubmit = async (data: FormLogin) => {
-        const token = await login(data);
-        console.log("token sfsdfsdfsdfd", token);
-        Cookies.set("role", token.role, { expires: 7 }); // Expiry time in days
-        localStorage.setItem("accessToken", token.token);
-        window.location.href = "/";
+        await login(data, navigate);
     };
 
     return (

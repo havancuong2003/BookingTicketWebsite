@@ -10,6 +10,7 @@ import {
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { createMovie, getIDMovieAfterUpload } from "../../../../services";
+import { useAuth } from "../../../../contexts";
 
 type FormData = {
     title: string;
@@ -25,7 +26,7 @@ type FormData = {
 };
 
 export const AddNewMovie = () => {
-    const accessToken = localStorage.getItem("accessToken");
+    const { accessToken } = useAuth();
 
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const {
