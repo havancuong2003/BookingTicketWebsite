@@ -4,6 +4,7 @@ import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import {
     AddNewMovie,
+    Dashboard,
     LandingPage,
     ListMovie,
     Login,
@@ -14,6 +15,7 @@ import {
     Support,
     Voucher,
 } from "./pages";
+
 import { Layout } from "./layout";
 
 import { AuthProvider } from "./contexts";
@@ -92,6 +94,10 @@ const router = createBrowserRouter([
                 {React.createElement(withAuth(ListMovie, { role: "admin" }))}
             </Layout>
         ),
+    },
+    {
+        path: "/dashboard",
+        element: <Dashboard />,
     },
     {
         path: "*",
