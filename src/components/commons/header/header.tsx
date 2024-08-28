@@ -21,6 +21,7 @@ const pages: Pages = {
     Voucher: "/voucher",
     "Ưu đãi": "/offer",
     "Hỗ trợ": "/support",
+    "List movie": "/admin/listmovie",
 };
 
 type Pages = {
