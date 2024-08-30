@@ -27,7 +27,7 @@ interface UserInfo {
 export const signUp = async (data: FormData) => {
     try {
         const response = await axios.post(
-            `${import.meta.env.VITE_BACKEND_URL}/user/register`,
+            `${import.meta.env.VITE_BACKEND_URL}/auth/signup`,
             data,
             {
                 headers: {
