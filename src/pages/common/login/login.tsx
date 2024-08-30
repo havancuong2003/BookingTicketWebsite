@@ -6,9 +6,8 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { FcGoogle } from "react-icons/fc";
-import { loginGG } from "../../../services";
+import { useAuth } from "../../../contexts/AuthContext";
 import { useForm } from "react-hook-form";
-import { useAuth } from "../../../contexts";
 import { useNavigate } from "react-router-dom";
 
 type FormLogin = {
@@ -17,15 +16,28 @@ type FormLogin = {
 };
 
 export function Login() {
+    const navigate = useNavigate();
+    const { loginWithCredentials, isAuthenticated, loginWithGoogle } =
+        useAuth();
+
+    // useEffect(() => {
+    //     if (isAuthenticated) {
+    //         navigate("/");
+    //     }
+    // }, [isAuthenticated, navigate]);
+
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm<FormLogin>();
-    const navigate = useNavigate();
-    const { login } = useAuth();
     const onSubmit = async (data: FormLogin) => {
-        await login(data, navigate);
+        await loginWithCredentials(data.email, data.password);
+        navigate("/");
+    };
+
+    const handleGoogleLogin = () => {
+        loginWithGoogle();
     };
 
     return (
@@ -85,7 +97,7 @@ export function Login() {
                             color: "black",
                             border: "1px solid black",
                         }}
-                        onClick={loginGG}
+                        onClick={handleGoogleLogin}
                     >
                         <FcGoogle size={30} />{" "}
                         <span className="ml-10">Đăng nhập với Google</span>

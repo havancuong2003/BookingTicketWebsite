@@ -1,55 +1,42 @@
 import axios from "axios";
-// const navigate = useNavigate();
-export const getIDMovieAfterUpload = async (
-    accessToken: string,
-    formData: FormData
-) => {
-    try {
-        const response = await fetch(
-            `${import.meta.env.VITE_BACKEND_URL}/auth/upload`,
-            {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
-                body: formData,
-            }
-        );
+import { setupInterceptors } from "../../../utils/";
 
-        if (response.ok) {
-            const data = await response.json();
-            console.log("Video uploaded successfully:", data);
-            return data; // Return video ID
-        } else {
-            console.error("Failed to upload video:", await response.text());
-            return null;
-        }
+const axiosInstance = axios.create({
+    baseURL: import.meta.env.VITE_BACKEND_URL,
+    withCredentials: true,
+});
+
+setupInterceptors(axiosInstance);
+
+export const getIDMovieAfterUpload = async (formData: FormData) => {
+    try {
+        const response = await axiosInstance.post("/auth/upload", formData);
+        console.log("Video uploaded successfully:", response.data);
+        return response.data;
     } catch (error) {
         console.error("Error uploading video:", error);
-        return null;
+        throw error; // Ném lỗi để component gọi API có thể xử lý
     }
 };
 
 export const createMovie = async (movieData: any, navigate: any) => {
     try {
-        const response = await axios.post(
-            `${import.meta.env.VITE_BACKEND_URL}/movie/create`,
-            movieData
-        );
+        const response = await axiosInstance.post("/movie/create", movieData);
         console.log("Movie added successfully:", response.data);
         navigate("/admin/listmovie");
+        return response.data;
     } catch (error) {
         console.error("Error adding movie:", error);
+        throw error;
     }
 };
 
 export const listMovie = async () => {
     try {
-        const response = await axios.get(
-            `${import.meta.env.VITE_BACKEND_URL}/movie/getAll`
-        );
+        const response = await axiosInstance.get("/movie/getAll");
         return response.data;
     } catch (error) {
-        console.error(error);
+        console.error("Error fetching movies:", error);
+        throw error;
     }
 };

@@ -26,8 +26,6 @@ type FormData = {
 };
 
 export const AddNewMovie = () => {
-    const { accessToken } = useAuth();
-
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const {
         register,
@@ -44,15 +42,10 @@ export const AddNewMovie = () => {
     };
 
     const uploadVideoToGoogleDrive = async (file: File) => {
-        if (!accessToken) {
-            console.error("No access token found, please login first.");
-            return null;
-        }
-
         const formData = new FormData();
         formData.append("video", file);
 
-        const videoID = await getIDMovieAfterUpload(accessToken, formData);
+        const videoID = await getIDMovieAfterUpload(formData);
         return videoID;
         // try {
         //     const response = await fetch(
