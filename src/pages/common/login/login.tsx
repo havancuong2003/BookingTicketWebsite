@@ -9,6 +9,7 @@ import { FcGoogle } from "react-icons/fc";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 type FormLogin = {
     email: string;
@@ -20,11 +21,11 @@ export function Login() {
     const { loginWithCredentials, isAuthenticated, loginWithGoogle } =
         useAuth();
 
-    // useEffect(() => {
-    //     if (isAuthenticated) {
-    //         navigate("/");
-    //     }
-    // }, [isAuthenticated, navigate]);
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate("/");
+        }
+    }, [isAuthenticated, navigate]);
 
     const {
         register,
