@@ -13,7 +13,7 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import logo from "../../../assets/img/logo.png";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../../../contexts";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const pages: Pages = {
     "Lịch chiếu rạp": "/schedule",
@@ -27,7 +27,6 @@ const pages: Pages = {
 type Pages = {
     [key: string]: string;
 };
-
 export function Header() {
     const { logout } = useAuth();
     const navigate = useNavigate();
@@ -54,9 +53,9 @@ export function Header() {
         setAnchorElUser(null);
     };
 
-    const handleLogout = () => {
-        logout();
-        navigate("/login"); // Call navigate after logout
+    const handleLogout = async () => {
+        await logout();
+        navigate("/login");
     };
 
     return (

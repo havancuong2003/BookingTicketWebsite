@@ -10,7 +10,6 @@ import {
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { createMovie, getIDMovieAfterUpload } from "../../../../services";
-import { useAuth } from "../../../../contexts";
 
 type FormData = {
     title: string;
@@ -26,8 +25,6 @@ type FormData = {
 };
 
 export const AddNewMovie = () => {
-    const { accessToken } = useAuth();
-
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const {
         register,
@@ -44,40 +41,11 @@ export const AddNewMovie = () => {
     };
 
     const uploadVideoToGoogleDrive = async (file: File) => {
-        if (!accessToken) {
-            console.error("No access token found, please login first.");
-            return null;
-        }
-
         const formData = new FormData();
         formData.append("video", file);
 
-        const videoID = await getIDMovieAfterUpload(accessToken, formData);
+        const videoID = await getIDMovieAfterUpload(formData);
         return videoID;
-        // try {
-        //     const response = await fetch(
-        //         `${import.meta.env.VITE_BACKEND_URL}/auth/upload`,
-        //         {
-        //             method: "POST",
-        //             headers: {
-        //                 Authorization: `Bearer ${accessToken}`,
-        //             },
-        //             body: formData,
-        //         }
-        //     );
-
-        //     if (response.ok) {
-        //         const data = await response.json();
-        //         console.log("Video uploaded successfully:", data);
-        //         return data; // Return video ID
-        //     } else {
-        //         console.error("Failed to upload video:", await response.text());
-        //         return null;
-        //     }
-        // } catch (error) {
-        //     console.error("Error uploading video:", error);
-        //     return null;
-        // }
     };
 
     const onSubmit = async (data: FormData) => {

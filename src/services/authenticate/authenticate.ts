@@ -25,7 +25,6 @@ interface UserInfo {
     lastName: string;
 }
 export const signUp = async (data: FormData) => {
-    console.log("data", data);
     try {
         const response = await axios.post(
             `${import.meta.env.VITE_BACKEND_URL}/user/register`,
@@ -36,14 +35,19 @@ export const signUp = async (data: FormData) => {
                 },
             }
         );
-        console.log(response);
+        return response.data;
     } catch (error) {
-        console.error(error);
+        if (axios.isAxiosError(error) && error.response) {
+            throw new Error(
+                error.response.data.message || "Email already exists"
+            );
+        }
+        throw new Error("An error occurred during sign up");
     }
 };
 
-export const login = async (data: FormLogin) => {
-    console.log("data", data);
+export const loginNormal = async (data: FormLogin) => {
+    console.log("Login data:", data);
     try {
         const response = await axios.post(
             `${import.meta.env.VITE_BACKEND_URL}/auth/login`,
@@ -56,14 +60,43 @@ export const login = async (data: FormLogin) => {
             }
         );
 
-        console.log("response herre", response);
-        return response?.data?.user;
+        console.log("Login response:", response?.data);
+        return response?.data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
-            alert(error.response?.data.message);
-            console.error("err", error.response?.data);
+            console.error("Axios error:", error.response?.data);
+        } else {
+            console.error("General error:", error);
         }
-        console.error(error);
+    }
+};
+
+export const logout = async () => {
+    try {
+        await axios.post(
+            `${import.meta.env.VITE_BACKEND_URL}/auth/logout`,
+            {},
+            {
+                withCredentials: true, // Đảm bảo cookie được gửi cùng với yêu cầu
+            }
+        );
+    } catch (error) {
+        console.error("Logout failed", error);
+    }
+};
+
+export const reFreshToken = async () => {
+    try {
+        const response = await axios.post(
+            `${import.meta.env.VITE_BACKEND_URL}/auth/refresh-token`,
+            {},
+            {
+                withCredentials: true, // Đảm bảo cookie để gữi cấp nhật
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Refresh token failed", error);
     }
 };
 
@@ -169,4 +202,17 @@ const isJwtToken = (token: string): boolean => {
 const isGoogleToken = (token: string): boolean => {
     // Google token thể có 2 phần (header.payload), kiểm tra điều này
     return token.startsWith("ya29");
+};
+
+export const checkAndSetToken = async () => {
+    try {
+        const response = await getAccessToken();
+        if (response && response.accessToken) {
+            localStorage.setItem("accessToken", response.accessToken);
+            return response.accessToken;
+        }
+    } catch (error) {
+        console.error("Error checking and setting token:", error);
+    }
+    return null;
 };
