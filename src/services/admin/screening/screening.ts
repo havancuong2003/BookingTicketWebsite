@@ -29,11 +29,11 @@ export const updateScreeing = async (data: any, id: any, navigate: any) => {
             `${import.meta.env.VITE_BACKEND_URL}/screening/update/${id}`,
             data
         );
-        console.log("room updated successfully:", response.data);
+        console.log("screening updated successfully:", response.data);
         navigate("/admin/screening/listscreening");
     } catch (error) {
         console.log(data);
-        console.error("Error updated room:", error, data);
+        console.error("Error updated screening:", error, data);
     }
 };
 export const detailScreeing = async (id: any) => {
@@ -55,4 +55,12 @@ export const convertToDateTimeLocal = (date: Date): string => {
     const minutes = String(date.getMinutes()).padStart(2, "0");
 
     return `${year}-${month}-${day}T${hours}:${minutes}`;
+};
+
+export const convertToDateTimePublish = (date: Date): string => {
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    return `${month}/${day} ${hours}:${minutes}`;
 };

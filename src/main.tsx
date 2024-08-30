@@ -1,9 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import {
     AddNewMovie,
+    Dashboard,
     LandingPage,
     ListMovie,
     Login,
@@ -14,17 +14,20 @@ import {
     Support,
     Voucher,
     ListCinema,
-    AddNewCinema,
     UpdateCinema,
     AddNewRoom,
     ListRoom,
     UpdateRoom,
 } from "./pages";
 import { Layout } from "./layout";
+import { AuthProvider } from "./contexts";
 
-import { AuthProvider, PrivateRoute } from "./contexts";
 import { NotFound } from "./components";
+import PrivateRoute from "./routes/privateRoutes";
+import "./index.css";
 import { AddNewScreening } from "./pages/admin/screening-control";
+import { ListScreening } from "./pages/admin/screening-control/list-screening/list-screening";
+import { ChooseChair } from "./pages/user/choose-chair/choose-chair";
 
 const router = createBrowserRouter([
     {
@@ -62,9 +65,11 @@ const router = createBrowserRouter([
     {
         path: "/voucher",
         element: (
-            <Layout>
-                <Voucher />
-            </Layout>
+            <PrivateRoute roleUser="user">
+                <Layout>
+                    <Voucher />
+                </Layout>
+            </PrivateRoute>
         ),
     },
     {
@@ -78,84 +83,110 @@ const router = createBrowserRouter([
     {
         path: "/support",
         element: (
-            <Layout>
-                <Support />
-            </Layout>
+            <PrivateRoute roleUser="user">
+                <Layout>
+                    <Support />
+                </Layout>
+            </PrivateRoute>
         ),
     },
     {
         path: "/admin/addnewmovie",
         element: (
-            <PrivateRoute>
-                <AddNewMovie />
+            <PrivateRoute roleUser="admin">
+                <Layout>
+                    <AddNewMovie />
+                </Layout>
             </PrivateRoute>
         ),
     },
     {
         path: "/admin/listmovie",
         element: (
-            <PrivateRoute>
-                <ListMovie />
+            <PrivateRoute roleUser="admin">
+                <Layout>
+                    <ListMovie />
+                </Layout>
             </PrivateRoute>
         ),
     },
-
     {
-        path: "/admin/cinema/addcinema",
-        element: (
-            <PrivateRoute>
-                <AddNewCinema />
-            </PrivateRoute>
-        ),
+        path: "/dashboard",
+        element: <Dashboard />,
     },
 
     {
         path: "/admin/cinema/listcinema",
         element: (
-            <PrivateRoute>
-                <ListCinema />
-            </PrivateRoute>
+            // <PrivateRoute>
+            <ListCinema />
+            // </PrivateRoute>
         ),
     },
     {
         path: "/admin/cinema/details/:id",
         element: (
-            <PrivateRoute>
-                <UpdateCinema />
-            </PrivateRoute>
+            // <PrivateRoute>
+            <UpdateCinema />
+            // </PrivateRoute>
         ),
     },
     {
         path: "/admin/room/addroom",
         element: (
-            <PrivateRoute>
-                <AddNewRoom />
-            </PrivateRoute>
+            // <PrivateRoute>
+            <AddNewRoom />
+            // </PrivateRoute>
         ),
     },
 
     {
         path: "/admin/room/listroom",
         element: (
-            <PrivateRoute>
-                <ListRoom />
-            </PrivateRoute>
+            // <PrivateRoute>
+            <ListRoom />
+            // {/* // </PrivateRoute> */}
         ),
     },
     {
         path: "/admin/room/details/:id",
         element: (
-            <PrivateRoute>
-                <UpdateRoom />
-            </PrivateRoute>
+            // <PrivateRoute>
+            <UpdateRoom />
+            // </PrivateRoute>
         ),
     },
     {
         path: "/admin/screening/addscreening",
         element: (
-            <PrivateRoute>
-                <AddNewScreening />
-            </PrivateRoute>
+            // <PrivateRoute>
+            <AddNewScreening />
+            // </PrivateRoute>
+        ),
+    },
+    {
+        path: "/admin/screening/listscreening",
+        element: (
+            // <PrivateRoute>
+            <ListScreening />
+            // </PrivateRoute>
+        ),
+    },
+    // {
+    //     path: "/admin/screening/details/:id",
+    //     element: (
+    //         <PrivateRoute>
+    //         <UpdateScreening />
+    //         </PrivateRoute>
+    //     ),
+    // },
+
+    {
+        path: "/choosechair",
+        element: (
+            // <PrivateRoute>
+            <ChooseChair />
+            // </PrivateRoute>
         ),
     },
     {
@@ -163,6 +194,7 @@ const router = createBrowserRouter([
         element: <NotFound />,
     },
 ]);
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
         <AuthProvider>
