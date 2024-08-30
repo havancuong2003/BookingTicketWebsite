@@ -90,7 +90,7 @@ export const ChooseChair = () => {
         seatReserved: [],
         seatChoosed: [],
     };
-    const { userName, userId } = useAuth();
+    // const { userName, userId } = useAuth();
 
     const [seatChoosed, setSeatChoosed] = useState<string[]>(
         seatData.seatChoosed
@@ -111,7 +111,7 @@ export const ChooseChair = () => {
     return (
         <>
             <h1 style={{ textAlign: "center" }}>
-                Thong tin user: {userName} id: {userId}
+                {/* Thong tin user: {userName} id: {userId} */}
             </h1>
             <div
                 style={{
@@ -286,7 +286,7 @@ export const ChooseChair = () => {
                                 borderRadius: "8px",
                             }}
                         >
-                            User Id: {userId}
+                            {/* User Id: {userId} */}
                         </li>
                         <li
                             style={{
@@ -295,7 +295,7 @@ export const ChooseChair = () => {
                                 borderRadius: "8px",
                             }}
                         >
-                            Tên: {userName}
+                            {/* Tên: {userName} */}
                         </li>
                     </ul>
                     <ul style={{ listStyle: "none", padding: 0 }}>

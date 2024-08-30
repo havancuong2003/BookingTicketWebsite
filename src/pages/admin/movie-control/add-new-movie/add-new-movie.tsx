@@ -10,7 +10,6 @@ import {
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { createMovie, getIDMovieAfterUpload } from "../../../../services";
-import { useAuth } from "../../../../contexts";
 
 type FormData = {
     title: string;
@@ -26,9 +25,9 @@ type FormData = {
 };
 
 export const AddNewMovie = () => {
-    const { accessToken } = useAuth();
-
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [notiSuccess, setNotiSuccess] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
     const {
         register,
         handleSubmit,
@@ -43,41 +42,35 @@ export const AddNewMovie = () => {
         }
     };
 
-    const uploadVideoToGoogleDrive = async (file: File) => {
-        if (!accessToken) {
-            console.error("No access token found, please login first.");
-            return null;
-        }
-
+    const uploadVideoToGoogleDrive = async (
+        file: File
+    ): Promise<string | null> => {
+        setNotiSuccess(null);
+        setError(null);
         const formData = new FormData();
         formData.append("video", file);
 
-        const videoID = await getIDMovieAfterUpload(accessToken, formData);
-        return videoID;
-        // try {
-        //     const response = await fetch(
-        //         `${import.meta.env.VITE_BACKEND_URL}/auth/upload`,
-        //         {
-        //             method: "POST",
-        //             headers: {
-        //                 Authorization: `Bearer ${accessToken}`,
-        //             },
-        //             body: formData,
-        //         }
-        //     );
+        try {
+            const videoData = await getIDMovieAfterUpload(formData);
+            console.log("video data", videoData);
 
-        //     if (response.ok) {
-        //         const data = await response.json();
-        //         console.log("Video uploaded successfully:", data);
-        //         return data; // Return video ID
-        //     } else {
-        //         console.error("Failed to upload video:", await response.text());
-        //         return null;
-        //     }
-        // } catch (error) {
-        //     console.error("Error uploading video:", error);
-        //     return null;
-        // }
+            if (videoData.statusCode === 200) {
+                setNotiSuccess(videoData.message);
+                // Trả về Promise để đợi 3 giây
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        resolve(videoData.data.id);
+                    }, 3000);
+                });
+            } else {
+                setError(videoData.message);
+                return null;
+            }
+        } catch (error) {
+            setError("Có lỗi xảy ra khi tải video lên.");
+            console.error("Error uploading video:", error);
+            return null;
+        }
     };
 
     const onSubmit = async (data: FormData) => {
@@ -87,6 +80,8 @@ export const AddNewMovie = () => {
         }
 
         const videoId = await uploadVideoToGoogleDrive(selectedFile);
+        console.log("video id nayyyyyy", videoId);
+
         if (!videoId) {
             console.error("Failed to upload video. Movie creation aborted.");
             return;
@@ -102,25 +97,21 @@ export const AddNewMovie = () => {
             rating: Number(data.rating), // Chuyển đổi thành số
             status: data.status,
             duration: Number(data.duration),
-            trailer: videoId.id,
+            trailer: videoId,
         };
 
         createMovie(movieData, navigate);
-        // try {
-        //     const response = await axios.post(
-        //         `${import.meta.env.VITE_BACKEND_URL}/movie/create`,
-        //         movieData
-        //     );
-        //     console.log("Movie added successfully:", response.data);
-        //     navigate("/admin/listmovie");
-        // } catch (error) {
-        //     console.error("Error adding movie:", error);
-        // }
     };
 
     return (
         <div className="flex justify-center">
             <div className="w-full max-w-lg">
+                {error && <h3 className="text-red-500 text-center">{error}</h3>}
+                {notiSuccess && (
+                    <h3 className="text-green-500 text-center">
+                        {notiSuccess}
+                    </h3>
+                )}
                 <h1 className="text-center mb-6">Thêm 1 bộ phim mới</h1>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="grid grid-cols-2 gap-4">

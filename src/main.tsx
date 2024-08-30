@@ -1,9 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { Layout } from "./layout";
+import { NotFound } from "./components";
+import "./index.css";
+
 import {
     AddNewMovie,
-    Dashboard,
     LandingPage,
     ListMovie,
     Login,
@@ -13,18 +16,14 @@ import {
     SignUp,
     Support,
     Voucher,
+    Dashboard,
     ListCinema,
     UpdateCinema,
     AddNewRoom,
     ListRoom,
     UpdateRoom,
 } from "./pages";
-import { Layout } from "./layout";
-import { AuthProvider } from "./contexts";
-
-import { NotFound } from "./components";
-import PrivateRoute from "./routes/privateRoutes";
-import "./index.css";
+import { AuthProvider } from "./contexts/AuthContext";
 import { AddNewScreening } from "./pages/admin/screening-control";
 import { ListScreening } from "./pages/admin/screening-control/list-screening/list-screening";
 import { ChooseChair } from "./pages/user/choose-chair/choose-chair";
@@ -65,11 +64,9 @@ const router = createBrowserRouter([
     {
         path: "/voucher",
         element: (
-            <PrivateRoute roleUser="user">
-                <Layout>
-                    <Voucher />
-                </Layout>
-            </PrivateRoute>
+            <Layout>
+                <Voucher />
+            </Layout>
         ),
     },
     {
@@ -83,31 +80,25 @@ const router = createBrowserRouter([
     {
         path: "/support",
         element: (
-            <PrivateRoute roleUser="user">
-                <Layout>
-                    <Support />
-                </Layout>
-            </PrivateRoute>
+            <Layout>
+                <Support />
+            </Layout>
         ),
     },
     {
         path: "/admin/addnewmovie",
         element: (
-            <PrivateRoute roleUser="admin">
-                <Layout>
-                    <AddNewMovie />
-                </Layout>
-            </PrivateRoute>
+            <Layout>
+                <AddNewMovie />
+            </Layout>
         ),
     },
     {
         path: "/admin/listmovie",
         element: (
-            <PrivateRoute roleUser="admin">
-                <Layout>
-                    <ListMovie />
-                </Layout>
-            </PrivateRoute>
+            <Layout>
+                <ListMovie />
+            </Layout>
         ),
     },
     {

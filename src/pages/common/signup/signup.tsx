@@ -10,7 +10,11 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useForm } from "react-hook-form";
-import { signUp } from "../../../services";
+import { useAuth } from "../../../contexts";
+import { useState } from "react";
+import { Alert } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { CircularProgress } from "@mui/material";
 
 type FormData = {
     firstName: string;
@@ -23,23 +27,49 @@ type FormData = {
 const defaultTheme = createTheme();
 
 export function SignUp() {
+    const [signUpError, setSignUpError] = useState<string | null>(null);
+    const [signUpSuccess, setSignUpSuccess] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const navigate = useNavigate();
+    const { handleSignUp } = useAuth();
     const {
         register,
         handleSubmit,
-        formState: { errors },
         watch,
+        formState: { errors },
     } = useForm<FormData>();
-
-    const onSubmit = (data: FormData) => {
-        signUp({
-            email: data.email,
-            password: data.password,
-            firstName: data.firstName,
-            lastName: data.lastName,
-        });
+    const onSubmit = async (data: FormData) => {
+        setSignUpError(null);
+        setSignUpSuccess(null);
+        setIsSubmitting(true);
+        try {
+            const result = await handleSignUp({
+                email: data.email,
+                password: data.password,
+                firstName: data.firstName,
+                lastName: data.lastName,
+            });
+            if (!result.success) {
+                setSignUpError(
+                    result.error || "An error occurred during sign up"
+                );
+            } else {
+                setSignUpSuccess(
+                    "Sign up successful! Redirecting to login page..."
+                );
+                setIsSubmitting(true);
+                setTimeout(() => {
+                    setIsSubmitting(false);
+                    navigate("/login");
+                }, 3000);
+            }
+        } catch (error) {
+            setSignUpError("An unexpected error occurred");
+        }
     };
 
     const password = watch("password");
+    console.log("submitting", isSubmitting);
 
     return (
         <ThemeProvider theme={defaultTheme}>
@@ -59,6 +89,16 @@ export function SignUp() {
                     <Typography component="h1" variant="h5">
                         Đăng kí
                     </Typography>
+                    {signUpError && (
+                        <Alert severity="error" sx={{ mt: 2, width: "100%" }}>
+                            {signUpError}
+                        </Alert>
+                    )}
+                    {signUpSuccess && (
+                        <Alert severity="success" sx={{ mt: 2, width: "100%" }}>
+                            {signUpSuccess}
+                        </Alert>
+                    )}
                     <Box
                         component="form"
                         noValidate
@@ -154,14 +194,32 @@ export function SignUp() {
                                 />
                             </Grid>
                         </Grid>
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            sx={{ mt: 3, mb: 2 }}
-                        >
-                            Đăng kí
-                        </Button>
+                        <Box sx={{ position: "relative", mt: 3, mb: 2 }}>
+                            <Button
+                                type="submit"
+                                fullWidth
+                                variant="contained"
+                                disabled={isSubmitting}
+                                sx={{
+                                    height: 36.5,
+                                    opacity: isSubmitting ? 0 : 1,
+                                }}
+                            >
+                                Đăng kí
+                            </Button>
+                            {isSubmitting && (
+                                <CircularProgress
+                                    size={24}
+                                    sx={{
+                                        position: "absolute",
+                                        top: "50%",
+                                        left: "50%",
+                                        marginTop: "-12px",
+                                        marginLeft: "-12px",
+                                    }}
+                                />
+                            )}
+                        </Box>
                         <Grid container justifyContent="flex-end">
                             <Grid item>
                                 <Link href="login" variant="body2">
