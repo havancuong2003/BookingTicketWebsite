@@ -10,7 +10,10 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useForm } from "react-hook-form";
-import { signUp } from "../../../services";
+import { useAuth } from "../../../contexts";
+import { useState } from "react";
+import { Alert } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 type FormData = {
     firstName: string;
@@ -23,20 +26,35 @@ type FormData = {
 const defaultTheme = createTheme();
 
 export function SignUp() {
+    const [signUpError, setSignUpError] = useState<string | null>(null);
+    const [signUpSuccess, setSignUpSuccess] = useState<string | null>(null);
+    const navigate = useNavigate();
+    const { handleSignUp } = useAuth();
     const {
         register,
         handleSubmit,
-        formState: { errors },
         watch,
+        formState: { errors },
     } = useForm<FormData>();
-
-    const onSubmit = (data: FormData) => {
-        signUp({
+    const onSubmit = async (data: FormData) => {
+        setSignUpError(null);
+        setSignUpSuccess(null);
+        const result = await handleSignUp({
             email: data.email,
             password: data.password,
             firstName: data.firstName,
             lastName: data.lastName,
         });
+        if (!result.success) {
+            setSignUpError(result.error || "An error occurred during sign up");
+        } else {
+            setSignUpSuccess(
+                "Sign up successful! Redirecting to login page..."
+            );
+            setTimeout(() => {
+                navigate("/login");
+            }, 3000); // Chuyển hướng sau 3 giây
+        }
     };
 
     const password = watch("password");
@@ -59,6 +77,16 @@ export function SignUp() {
                     <Typography component="h1" variant="h5">
                         Đăng kí
                     </Typography>
+                    {signUpError && (
+                        <Alert severity="error" sx={{ mt: 2, width: "100%" }}>
+                            {signUpError}
+                        </Alert>
+                    )}
+                    {signUpSuccess && (
+                        <Alert severity="success" sx={{ mt: 2, width: "100%" }}>
+                            {signUpSuccess}
+                        </Alert>
+                    )}
                     <Box
                         component="form"
                         noValidate

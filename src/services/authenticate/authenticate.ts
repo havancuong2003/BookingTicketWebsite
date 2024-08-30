@@ -25,7 +25,6 @@ interface UserInfo {
     lastName: string;
 }
 export const signUp = async (data: FormData) => {
-    console.log("data", data);
     try {
         const response = await axios.post(
             `${import.meta.env.VITE_BACKEND_URL}/user/register`,
@@ -36,9 +35,14 @@ export const signUp = async (data: FormData) => {
                 },
             }
         );
-        console.log(response);
+        return response.data;
     } catch (error) {
-        console.error(error);
+        if (axios.isAxiosError(error) && error.response) {
+            throw new Error(
+                error.response.data.message || "Email already exists"
+            );
+        }
+        throw new Error("An error occurred during sign up");
     }
 };
 

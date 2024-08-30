@@ -5,7 +5,14 @@ import {
     userInfo,
     logout as logoutService,
     checkAndSetToken,
+    signUp,
 } from "../services/authenticate/authenticate";
+type FormData = {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+};
 
 const useAuthState = () => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -48,6 +55,22 @@ const useAuthState = () => {
         },
         [handleLoginSuccess, handleLoginFailure]
     );
+    const handleSignUp = async (data: FormData) => {
+        try {
+            const response = await signUp(data);
+            console.log("Sign up successful", response);
+            return { success: true };
+        } catch (error) {
+            console.error("Sign up failed:", error);
+            return {
+                success: false,
+                error:
+                    error instanceof Error
+                        ? error.message
+                        : "An unknown error occurred",
+            };
+        }
+    };
 
     const loginWithGoogle = useCallback(() => {
         loginGG(); // This will redirect to Google login
@@ -83,6 +106,7 @@ const useAuthState = () => {
         loginWithCredentials,
         loginWithGoogle,
         logout,
+        handleSignUp,
     };
 };
 
