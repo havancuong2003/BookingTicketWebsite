@@ -11,7 +11,6 @@ setupInterceptors(axiosInstance);
 export const getIDMovieAfterUpload = async (formData: FormData) => {
     try {
         const response = await axiosInstance.post("/auth/upload", formData);
-        console.log("Video uploaded successfully:", response.data);
         return response.data;
     } catch (error) {
         console.error("Error uploading video:", error);
