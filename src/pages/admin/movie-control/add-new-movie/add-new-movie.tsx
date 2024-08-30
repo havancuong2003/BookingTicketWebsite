@@ -42,25 +42,35 @@ export const AddNewMovie = () => {
         }
     };
 
-    const uploadVideoToGoogleDrive = async (file: File) => {
+    const uploadVideoToGoogleDrive = async (
+        file: File
+    ): Promise<string | null> => {
         setNotiSuccess(null);
         setError(null);
         const formData = new FormData();
         formData.append("video", file);
 
-        const videoData = await getIDMovieAfterUpload(formData);
-        console.log("video data", videoData);
+        try {
+            const videoData = await getIDMovieAfterUpload(formData);
+            console.log("video data", videoData);
 
-        if (videoData.statusCode === 200) {
-            setNotiSuccess(videoData.message);
-            setError(null);
-            return videoData.data.id;
-        } else if (videoData.statusCode !== 200) {
-            setError(videoData.message);
-            setNotiSuccess(null);
+            if (videoData.statusCode === 200) {
+                setNotiSuccess(videoData.message);
+                // Trả về Promise để đợi 3 giây
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        resolve(videoData.data.id);
+                    }, 3000);
+                });
+            } else {
+                setError(videoData.message);
+                return null;
+            }
+        } catch (error) {
+            setError("Có lỗi xảy ra khi tải video lên.");
+            console.error("Error uploading video:", error);
             return null;
         }
-        return null;
     };
 
     const onSubmit = async (data: FormData) => {
