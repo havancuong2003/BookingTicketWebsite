@@ -17,6 +17,7 @@ import {
     Support,
     Voucher,
     Dashboard,
+    VerifyEmail,
 } from "./pages";
 import { AuthProvider } from "./contexts/AuthContext";
 
@@ -96,6 +97,10 @@ const router = createBrowserRouter([
     {
         path: "/dashboard",
         element: <Dashboard />,
+    },
+    {
+        path: "verify-email",
+        element: <VerifyEmail />,
     },
     {
         path: "*",

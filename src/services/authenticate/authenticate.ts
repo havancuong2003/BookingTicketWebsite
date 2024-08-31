@@ -216,3 +216,16 @@ export const checkAndSetToken = async () => {
     }
     return null;
 };
+
+export const verifyEmail = async (email: string, token: string) => {
+    try {
+        const response = await axios.post(
+            `${import.meta.env.VITE_BACKEND_URL}/auth/verify-email`,
+            { email, token }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error verifying email:", error);
+        throw error;
+    }
+};

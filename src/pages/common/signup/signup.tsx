@@ -49,10 +49,12 @@ export function SignUp() {
                 firstName: data.firstName,
                 lastName: data.lastName,
             });
+
             if (!result.success) {
                 setSignUpError(
                     result.error || "An error occurred during sign up"
                 );
+                setIsSubmitting(false); // Set isSubmitting to false on error
             } else {
                 setSignUpSuccess(
                     "Sign up successful! Redirecting to login page..."
@@ -64,7 +66,9 @@ export function SignUp() {
                 }, 3000);
             }
         } catch (error) {
+            console.log("error", error);
             setSignUpError("An unexpected error occurred");
+            setIsSubmitting(false); // Set isSubmitting to false on error
         }
     };
 
