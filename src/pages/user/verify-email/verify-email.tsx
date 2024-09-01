@@ -72,18 +72,24 @@ export const VerifyEmail = () => {
     }, [timeRemaining]);
 
     const handleResendEmail = async () => {
+        console.log("check email", email);
         if (!email) {
             setError("Email is missing");
             return;
         }
         setResending(true);
         try {
-            await axios.post(
+            const result = await axios.post(
                 `${
                     import.meta.env.VITE_BACKEND_URL
                 }/auth/send-verification-email`,
                 { email }
             );
+            if (result.data.statusCode === 400) {
+                setError(result.data.message);
+                return;
+            }
+            console.log("check result", result);
             await fetchTimeRemaining(); // Fetch the new time remaining after sending email
             setError(null);
         } catch (err) {
@@ -99,20 +105,30 @@ export const VerifyEmail = () => {
         try {
             if (!email) throw new Error("Email is missing");
             const result = await verifyEmail(email, token);
+            if (result.statusCode === 400) {
+                setError(result.message);
+                return;
+            }
             console.log("check result", result);
             setSuccess(true);
             setTimeout(() => navigate("/login"), 3000); // Redirect after 3 seconds
         } catch (err) {
-            setError(
-                err instanceof Error
-                    ? err.message
-                    : "An error occurred during verification"
-            );
+            console.error("Verification error:", err);
+            if (axios.isAxiosError(err)) {
+                setError(
+                    err.response?.data?.message ||
+                        "An error occurred during verification"
+                );
+            } else if (err instanceof Error) {
+                setError(err.message);
+            } else {
+                setError("An unknown error occurred");
+            }
         }
     };
 
     return (
-        <Container component="main" maxWidth="xs">
+        <Container component="main" maxWidth="lg">
             <Box
                 sx={{
                     marginTop: 8,
@@ -123,6 +139,13 @@ export const VerifyEmail = () => {
             >
                 <Typography component="h1" variant="h5">
                     Verify Your Email
+                </Typography>
+                <Typography
+                    component="h1"
+                    variant="h5"
+                    sx={{ mt: 2, mb: 2, fontWeight: "bold" }}
+                >
+                    Your email: {email}
                 </Typography>
                 {success ? (
                     <Alert severity="success" sx={{ mt: 2, width: "100%" }}>

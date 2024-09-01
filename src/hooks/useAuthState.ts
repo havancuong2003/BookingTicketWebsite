@@ -24,6 +24,7 @@ const useAuthState = () => {
     const [accessToken, setAccessToken] = useState<string | null>(
         localStorage.getItem("accessToken")
     );
+    const [loginError, setLoginError] = useState<string | null>(null);
 
     const handleLoginSuccess = useCallback(async (token: string) => {
         setAccessToken(token);
@@ -45,16 +46,30 @@ const useAuthState = () => {
         async (email: string, password: string) => {
             try {
                 const response = await loginNormal({ email, password });
-                if (response && response.accessToken) {
+                console.log("check response 0", response);
+                if (response.statusCode === 403) {
+                    console.log("check response", response);
+                    setLoginError("Email is not verified");
+                    return {
+                        success: false,
+                        error: "Email is not verified",
+                        email,
+                    };
+                } else if (response && response.accessToken) {
+                    console.log("check response 2", response);
                     await handleLoginSuccess(response.accessToken);
+                    return { success: true };
                 }
+                throw new Error("Login failed");
             } catch (error) {
                 console.error("Normal login failed:", error);
                 handleLoginFailure();
+                return { error: "Login failed" };
             }
         },
         [handleLoginSuccess, handleLoginFailure]
     );
+
     const handleSignUp = async (data: FormData) => {
         try {
             const response = await signUp(data);
@@ -107,6 +122,8 @@ const useAuthState = () => {
         loginWithGoogle,
         logout,
         handleSignUp,
+        loginError,
+        setLoginError,
     };
 };
 

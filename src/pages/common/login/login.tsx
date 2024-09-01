@@ -9,7 +9,8 @@ import { FcGoogle } from "react-icons/fc";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
+import { Alert } from "@mui/material";
 
 type FormLogin = {
     email: string;
@@ -18,8 +19,15 @@ type FormLogin = {
 
 export function Login() {
     const navigate = useNavigate();
-    const { loginWithCredentials, isAuthenticated, loginWithGoogle } =
-        useAuth();
+    const {
+        loginWithCredentials,
+        isAuthenticated,
+        loginWithGoogle,
+        loginError,
+        setLoginError,
+    } = useAuth();
+    const [showError, setShowError] = useState(false);
+    console.log("check login error", loginError);
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -27,14 +35,35 @@ export function Login() {
         }
     }, [isAuthenticated, navigate]);
 
+    useEffect(() => {
+        if (loginError === "Email is not verified") {
+            setShowError(true);
+            const timer = setTimeout(() => {
+                setShowError(false);
+                setLoginError(null);
+                const email = localStorage.getItem("lastLoginEmail");
+                if (email) {
+                    navigate(
+                        `/verify-email?email=${encodeURIComponent(email)}`
+                    );
+                }
+            }, 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [loginError, navigate, setLoginError]);
+
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm<FormLogin>();
     const onSubmit = async (data: FormLogin) => {
-        await loginWithCredentials(data.email, data.password);
-        navigate("/");
+        localStorage.setItem("lastLoginEmail", data.email);
+        const result = await loginWithCredentials(data.email, data.password);
+        // if (!result.error) {
+        //     navigate("/");
+        // }
+        console.log("check result", result);
     };
 
     const handleGoogleLogin = () => {
@@ -124,6 +153,12 @@ export function Login() {
                         </Grid>
                     </Grid>
                 </Box>
+                {showError && (
+                    <Alert severity="error" sx={{ width: "100%", mb: 2 }}>
+                        Email is not verified. Redirecting to verification
+                        page...
+                    </Alert>
+                )}
             </Box>
         </Container>
     );
