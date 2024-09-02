@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import {
+    useParams,
+    useNavigate,
+    useSearchParams,
+    Link,
+} from "react-router-dom";
 import {
     TextField,
     Button,
@@ -9,7 +14,11 @@ import {
     Alert,
     CircularProgress,
 } from "@mui/material";
-import { verifyEmail } from "../../../services/authenticate/authenticate";
+import {
+    verifyEmail,
+    getTimeRemainingForVerification,
+    resendVerificationEmail,
+} from "../../../services/authenticate/authenticate";
 import axios from "axios"; // Make sure to import axios
 
 export const VerifyEmail = () => {
@@ -23,6 +32,16 @@ export const VerifyEmail = () => {
     const [loading, setLoading] = useState(true);
     const [resending, setResending] = useState(false);
 
+    const handleBackToLogin = useCallback(() => {
+        setToken("");
+        setError(null);
+        setSuccess(false);
+        setTimeRemaining(null);
+        setLoading(false);
+        setResending(false);
+        navigate("/login");
+    }, [navigate]);
+
     const fetchTimeRemaining = useCallback(async () => {
         if (!email) {
             setError("Email is missing");
@@ -30,16 +49,8 @@ export const VerifyEmail = () => {
             return;
         }
         try {
-            console.log("check env", import.meta.env.VITE_BACKEND_URL);
-
-            const response = await axios.post(
-                `${
-                    import.meta.env.VITE_BACKEND_URL
-                }/auth/time-remaining-verify`,
-                { email }
-            );
-            console.log("check time remaining", response.data);
-            setTimeRemaining(response.data.timeRemaining);
+            const response = await getTimeRemainingForVerification(email);
+            setTimeRemaining(response.timeRemaining);
             setError(null);
         } catch (err) {
             setError("Failed to fetch remaining time");
@@ -72,25 +83,18 @@ export const VerifyEmail = () => {
     }, [timeRemaining]);
 
     const handleResendEmail = async () => {
-        console.log("check email", email);
         if (!email) {
             setError("Email is missing");
             return;
         }
         setResending(true);
         try {
-            const result = await axios.post(
-                `${
-                    import.meta.env.VITE_BACKEND_URL
-                }/auth/send-verification-email`,
-                { email }
-            );
-            if (result.data.statusCode === 400) {
-                setError(result.data.message);
+            const result = await resendVerificationEmail(email);
+            if (result.statusCode === 400) {
+                setError(result.message);
                 return;
             }
-            console.log("check result", result);
-            await fetchTimeRemaining(); // Fetch the new time remaining after sending email
+            await fetchTimeRemaining();
             setError(null);
         } catch (err) {
             setError("Failed to resend verification email");
@@ -131,7 +135,23 @@ export const VerifyEmail = () => {
         <Container component="main" maxWidth="lg">
             <Box
                 sx={{
-                    marginTop: 8,
+                    marginTop: 4,
+                    marginBottom: 2,
+                    display: "flex",
+                    justifyContent: "flex-start",
+                }}
+            >
+                <Button
+                    onClick={handleBackToLogin}
+                    variant="outlined"
+                    color="primary"
+                >
+                    Back to Login
+                </Button>
+            </Box>
+            <Box
+                sx={{
+                    marginTop: 4,
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",

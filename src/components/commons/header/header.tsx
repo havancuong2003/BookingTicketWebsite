@@ -208,20 +208,36 @@ export function Header() {
                             open={Boolean(anchorElUser)}
                             onClose={handleCloseUserMenu}
                         >
-                            <MenuItem onClick={handleCloseUserMenu}>
-                                <Typography textAlign="center">
+                            <MenuItem
+                                onClick={handleCloseUserMenu}
+                                sx={{ width: "100%" }}
+                            >
+                                <Typography
+                                    textAlign="center"
+                                    sx={{ width: "100%" }}
+                                >
                                     <span>Trang cá nhân</span>
                                 </Typography>
                             </MenuItem>
-                            <MenuItem onClick={handleCloseUserMenu}>
-                                <Typography textAlign="center">
+                            <MenuItem
+                                onClick={handleCloseUserMenu}
+                                sx={{ width: "100%" }}
+                            >
+                                <Typography
+                                    textAlign="center"
+                                    sx={{ width: "100%" }}
+                                >
                                     <span>Thành viên</span>
                                 </Typography>
                             </MenuItem>
-                            <MenuItem onClick={handleCloseUserMenu}>
+                            <MenuItem
+                                onClick={handleCloseUserMenu}
+                                sx={{ width: "100%" }}
+                            >
                                 <Typography
                                     textAlign="center"
                                     onClick={handleLogout}
+                                    sx={{ width: "100%" }}
                                 >
                                     <span>Đăng xuất</span>
                                 </Typography>

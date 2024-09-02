@@ -7,6 +7,8 @@ import {
     checkAndSetToken,
     signUp,
 } from "../services/authenticate/authenticate";
+import axios from "axios";
+
 type FormData = {
     email: string;
     password: string;
@@ -45,26 +47,39 @@ const useAuthState = () => {
     const loginWithCredentials = useCallback(
         async (email: string, password: string) => {
             try {
-                const response = await loginNormal({ email, password });
-                console.log("check response 0", response);
-                if (response.statusCode === 403) {
-                    console.log("check response", response);
-                    setLoginError("Email is not verified");
+                const data = await loginNormal({ email, password });
+
+                if (data.statusCode === 200 && data.accessToken) {
+                    await handleLoginSuccess(data.accessToken);
+                    return { success: true, user: data.user };
+                } else if (
+                    data.statusCode === 403 &&
+                    data.requireEmailVerification
+                ) {
+                    setLoginError("Email not verified");
                     return {
                         success: false,
-                        error: "Email is not verified",
-                        email,
+                        error: "Email not verified",
+                        requireEmailVerification: true,
+                        email: data.email,
                     };
-                } else if (response && response.accessToken) {
-                    console.log("check response 2", response);
-                    await handleLoginSuccess(response.accessToken);
-                    return { success: true };
+                } else {
+                    setLoginError(data.message);
+                    return { success: false, error: data.message };
                 }
-                throw new Error("Login failed");
             } catch (error) {
-                console.error("Normal login failed:", error);
+                console.error("Login failed:", error);
                 handleLoginFailure();
-                return { error: "Login failed" };
+                if (axios.isAxiosError(error) && error.response) {
+                    const errorData = error.response.data;
+                    setLoginError(errorData.message);
+                    return { success: false, error: errorData.message };
+                }
+                setLoginError("An unexpected error occurred");
+                return {
+                    success: false,
+                    error: "An unexpected error occurred",
+                };
             }
         },
         [handleLoginSuccess, handleLoginFailure]
@@ -88,13 +103,14 @@ const useAuthState = () => {
     };
 
     const loginWithGoogle = useCallback(() => {
-        loginGG(); // This will redirect to Google login
+        loginGG();
     }, []);
 
     const logout = useCallback(async () => {
         try {
             await logoutService();
             localStorage.removeItem("accessToken");
+            localStorage.removeItem("lastLoginEmail");
             handleLoginFailure();
         } catch (error) {
             console.error("Logout failed:", error);
