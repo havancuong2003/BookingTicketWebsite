@@ -1,6 +1,6 @@
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
+
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -8,7 +8,7 @@ import Container from "@mui/material/Container";
 import { FcGoogle } from "react-icons/fc";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Alert } from "@mui/material";
 
@@ -52,6 +52,8 @@ export function Login() {
         formState: { errors },
     } = useForm<FormLogin>();
     const onSubmit = async (data: FormLogin) => {
+        console.log("data", data);
+
         localStorage.setItem("lastLoginEmail", data.email);
         setShowError(false);
         setRedirecting(false);
@@ -71,8 +73,14 @@ export function Login() {
                         )}`
                     );
                 }, 2000);
-            } else {
-                setLoginError(result.error);
+            } else if (result.requirePasswordReset) {
+                setLoginError(
+                    "Password not set. Redirecting to reset password page..."
+                );
+                setRedirecting(true);
+                setTimeout(() => {
+                    navigate(`/reset-password`);
+                }, 2000);
             }
         }
     };
@@ -153,14 +161,34 @@ export function Login() {
                     </Button>
                     <Grid container>
                         <Grid item xs>
-                            <Link href="#" variant="body2">
-                                Forgot password?
-                            </Link>
+                            <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{
+                                    "&:hover": {
+                                        color: "text.primary",
+                                    },
+                                }}
+                            >
+                                <Link to="/reset-password">
+                                    Forgot password?
+                                </Link>
+                            </Typography>
                         </Grid>
                         <Grid item>
-                            <Link href="/signup" variant="body2">
-                                {"Don't have an account? Sign Up"}
-                            </Link>
+                            <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{
+                                    "&:hover": {
+                                        color: "text.primary",
+                                    },
+                                }}
+                            >
+                                <Link to="/signup">
+                                    {"Don't have an account? Sign Up"}
+                                </Link>
+                            </Typography>
                         </Grid>
                     </Grid>
                 </Box>

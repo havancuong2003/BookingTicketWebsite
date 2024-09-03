@@ -63,6 +63,16 @@ const useAuthState = () => {
                         requireEmailVerification: true,
                         email: data.email,
                     };
+                } else if (
+                    data.statusCode === 401 &&
+                    data.message === "Password not set"
+                ) {
+                    return {
+                        success: false,
+                        error: "Password not set",
+                        requirePasswordReset: true,
+                        email: data.email,
+                    };
                 } else {
                     setLoginError(data.message);
                     return { success: false, error: data.message };
