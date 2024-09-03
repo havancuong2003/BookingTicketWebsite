@@ -216,3 +216,96 @@ export const checkAndSetToken = async () => {
     }
     return null;
 };
+
+export const verifyEmail = async (email: string, token: string) => {
+    try {
+        const response = await axios.post(
+            `${import.meta.env.VITE_BACKEND_URL}/auth/verify-email`,
+            { email, token }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error verifying email:", error);
+        throw error;
+    }
+};
+
+export const getTimeRemainingForVerification = async (email: string) => {
+    try {
+        const response = await axios.post(
+            `${import.meta.env.VITE_BACKEND_URL}/auth/time-remaining-verify`,
+            { email }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching remaining time:", error);
+        throw error;
+    }
+};
+
+export const resendVerificationEmail = async (email: string) => {
+    try {
+        const response = await axios.post(
+            `${import.meta.env.VITE_BACKEND_URL}/auth/send-verification-email`,
+            { email }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error resending verification email:", error);
+        throw error;
+    }
+};
+
+export const requestResetPassword = async (email: string) => {
+    try {
+        const response = await axios.post(
+            `${import.meta.env.VITE_BACKEND_URL}/auth/request-reset-password`,
+            { email }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error requesting password reset:", error);
+        throw error;
+    }
+};
+
+export const verifyResetToken = async (email: string, token: string) => {
+    try {
+        const response = await axios.post(
+            `${import.meta.env.VITE_BACKEND_URL}/auth/verify-reset-token`,
+            { email, token }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error verifying reset token:", error);
+        throw error;
+    }
+};
+
+export const getTimeRemainingForReset = async (email: string) => {
+    try {
+        const response = await axios.post(
+            `${
+                import.meta.env.VITE_BACKEND_URL
+            }/auth/time-remaining-reset-password`,
+            { email }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching remaining time for reset:", error);
+        throw error;
+    }
+};
+
+export const resetPassword = async (email: string, newPassword: string) => {
+    try {
+        const response = await axios.post(
+            `${import.meta.env.VITE_BACKEND_URL}/auth/reset-password`,
+            { email, newPassword }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error resetting password:", error);
+        throw error;
+    }
+};

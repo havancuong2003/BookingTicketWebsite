@@ -1,6 +1,6 @@
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import Link from "@mui/material/Link";
+
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -8,8 +8,9 @@ import Container from "@mui/material/Container";
 import { FcGoogle } from "react-icons/fc";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Alert } from "@mui/material";
 
 type FormLogin = {
     email: string;
@@ -18,8 +19,15 @@ type FormLogin = {
 
 export function Login() {
     const navigate = useNavigate();
-    const { loginWithCredentials, isAuthenticated, loginWithGoogle } =
-        useAuth();
+    const {
+        loginWithCredentials,
+        isAuthenticated,
+        loginWithGoogle,
+        loginError,
+        setLoginError,
+    } = useAuth();
+    const [showError, setShowError] = useState(false);
+    const [redirecting, setRedirecting] = useState(false);
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -27,20 +35,65 @@ export function Login() {
         }
     }, [isAuthenticated, navigate]);
 
+    useEffect(() => {
+        if (loginError) {
+            setShowError(true);
+            const timer = setTimeout(() => {
+                setShowError(false);
+                setLoginError(null);
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [loginError, setLoginError]);
+
     const {
         register,
         handleSubmit,
         formState: { errors },
     } = useForm<FormLogin>();
     const onSubmit = async (data: FormLogin) => {
-        await loginWithCredentials(data.email, data.password);
-        navigate("/");
+        console.log("data", data);
+
+        localStorage.setItem("lastLoginEmail", data.email);
+        setShowError(false);
+        setRedirecting(false);
+        const result = await loginWithCredentials(data.email, data.password);
+
+        if (!result.success) {
+            setShowError(true);
+            if (result.requireEmailVerification) {
+                setLoginError(
+                    "Email is not verified. Redirecting to verification page..."
+                );
+                setRedirecting(true);
+                setTimeout(() => {
+                    navigate(
+                        `/verify-email?email=${encodeURIComponent(
+                            result.email || ""
+                        )}`
+                    );
+                }, 2000);
+            } else if (result.requirePasswordReset) {
+                setLoginError(
+                    "Password not set. Redirecting to reset password page..."
+                );
+                setRedirecting(true);
+                setTimeout(() => {
+                    navigate(`/reset-password`);
+                }, 2000);
+            }
+        }
     };
 
     const handleGoogleLogin = () => {
         loginWithGoogle();
     };
 
+    useEffect(() => {
+        setShowError(false);
+        setLoginError(null);
+        setRedirecting(false);
+    }, []);
     return (
         <Container component="main" maxWidth="xs">
             <Box
@@ -89,41 +142,64 @@ export function Login() {
                         helperText={errors.password?.message}
                     />
                     <Button
-                        type="button"
-                        fullWidth
-                        variant="text"
-                        sx={{
-                            mt: 3,
-                            mb: 2,
-                            color: "black",
-                            border: "1px solid black",
-                        }}
-                        onClick={handleGoogleLogin}
-                    >
-                        <FcGoogle size={30} />{" "}
-                        <span className="ml-10">Đăng nhập với Google</span>
-                    </Button>
-                    <Button
                         type="submit"
                         fullWidth
                         variant="contained"
-                        sx={{ mb: 2 }}
+                        sx={{ mt: 3, mb: 2 }}
                     >
                         Sign In
                     </Button>
+                    <Button
+                        type="button"
+                        fullWidth
+                        variant="outlined"
+                        onClick={handleGoogleLogin}
+                        sx={{ mb: 2 }}
+                    >
+                        <FcGoogle size={20} style={{ marginRight: "10px" }} />
+                        Sign in with Google
+                    </Button>
                     <Grid container>
                         <Grid item xs>
-                            <Link href="#" variant="body2">
-                                Quên mật khẩu?
-                            </Link>
+                            <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{
+                                    "&:hover": {
+                                        color: "text.primary",
+                                    },
+                                }}
+                            >
+                                <Link to="/reset-password">
+                                    Forgot password?
+                                </Link>
+                            </Typography>
                         </Grid>
                         <Grid item>
-                            <Link href="signup" variant="body2">
-                                {"Bạn chưa có tài khoản? Đăng kí"}
-                            </Link>
+                            <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{
+                                    "&:hover": {
+                                        color: "text.primary",
+                                    },
+                                }}
+                            >
+                                <Link to="/signup">
+                                    {"Don't have an account? Sign Up"}
+                                </Link>
+                            </Typography>
                         </Grid>
                     </Grid>
                 </Box>
+                {showError && loginError && (
+                    <Alert
+                        severity={redirecting ? "info" : "error"}
+                        sx={{ width: "100%", mt: 2 }}
+                    >
+                        {loginError}
+                    </Alert>
+                )}
             </Box>
         </Container>
     );

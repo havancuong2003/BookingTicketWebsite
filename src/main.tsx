@@ -17,8 +17,10 @@ import {
     Support,
     Voucher,
     Dashboard,
+    VerifyEmail,
 } from "./pages";
 import { AuthProvider } from "./contexts/AuthContext";
+import { ResetPasswordPage } from "./pages/user/reset-password/reset-password";
 
 const router = createBrowserRouter([
     {
@@ -96,6 +98,14 @@ const router = createBrowserRouter([
     {
         path: "/dashboard",
         element: <Dashboard />,
+    },
+    {
+        path: "verify-email",
+        element: <VerifyEmail />,
+    },
+    {
+        path: "/reset-password",
+        element: <ResetPasswordPage />,
     },
     {
         path: "*",
