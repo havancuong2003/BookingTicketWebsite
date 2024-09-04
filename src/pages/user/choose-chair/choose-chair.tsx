@@ -90,7 +90,8 @@ export const ChooseChair = () => {
         seatReserved: [],
         seatChoosed: [],
     };
-    // const { userName, userId } = useAuth();
+    const a = useAuth();
+    console.log(a.user);
 
     const [seatChoosed, setSeatChoosed] = useState<string[]>(
         seatData.seatChoosed
