@@ -15,6 +15,7 @@ import {
     requestResetPassword,
 } from "../../../services/authenticate/authenticate";
 import { useNavigate } from "react-router-dom";
+import { AxiosError } from "axios";
 
 type FormEnterToken = {
     token: string;
@@ -77,13 +78,29 @@ export const EnterToken = ({
         setSuccess(false);
         setLoading(true);
         try {
-            await verifyResetToken(email, data.token);
-            setSuccess(true);
-            setTimeout(() => {
-                onTokenSubmitted(data.token);
-            }, 1000);
+            const response = await verifyResetToken(email, data.token);
+            console.log(response);
+
+            if (response.data.statusCode !== 200) {
+                setError(
+                    response.data.message ||
+                        "An error occurred. Please try again."
+                );
+            } else {
+                setSuccess(true);
+                setTimeout(() => {
+                    onTokenSubmitted(data.token);
+                }, 1000);
+            }
         } catch (err) {
-            setError("Invalid token. Please try again.");
+            if (err instanceof AxiosError && err.response) {
+                setError(
+                    err.response.data.message ||
+                        "Invalid token. Please try again."
+                );
+            } else {
+                setError("An unexpected error occurred. Please try again.");
+            }
         } finally {
             setLoading(false);
         }

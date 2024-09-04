@@ -1,5 +1,16 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import { setupInterceptors } from "../../utils/";
+
+// Create a new axios instance
+const axiosInstance = axios.create({
+    baseURL: import.meta.env.VITE_BACKEND_URL,
+    withCredentials: true,
+});
+
+// Setup interceptors
+setupInterceptors(axiosInstance);
+
 type FormData = {
     email: string;
     password: string;
@@ -25,17 +36,10 @@ interface UserInfo {
     lastName: string;
     userId: number;
 }
+
 export const signUp = async (data: FormData) => {
     try {
-        const response = await axios.post(
-            `${import.meta.env.VITE_BACKEND_URL}/auth/signup`,
-            data,
-            {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            }
-        );
+        const response = await axiosInstance.post("/auth/signup", data);
         return response.data;
     } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
@@ -48,81 +52,46 @@ export const signUp = async (data: FormData) => {
 };
 
 export const loginNormal = async (data: FormLogin) => {
-    console.log("Login data:", data);
     try {
-        const response = await axios.post(
-            `${import.meta.env.VITE_BACKEND_URL}/auth/login`,
-            data,
-            {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                withCredentials: true,
-            }
-        );
-
+        const response = await axiosInstance.post("/auth/login", data);
         console.log("Login response:", response?.data);
         return response?.data;
     } catch (error) {
-        if (axios.isAxiosError(error)) {
-            console.error("Axios error:", error.response?.data);
-        } else {
-            console.error("General error:", error);
-        }
+        console.error("Login error:", error);
+        throw error;
     }
 };
 
 export const logout = async () => {
     try {
-        await axios.post(
-            `${import.meta.env.VITE_BACKEND_URL}/auth/logout`,
-            {},
-            {
-                withCredentials: true, // Đảm bảo cookie được gửi cùng với yêu cầu
-            }
-        );
+        await axiosInstance.post("/auth/logout");
     } catch (error) {
         console.error("Logout failed", error);
+        throw error;
     }
 };
 
 export const reFreshToken = async () => {
     try {
-        const response = await axios.post(
-            `${import.meta.env.VITE_BACKEND_URL}/auth/refresh-token`,
-            {},
-            {
-                withCredentials: true, // Đảm bảo cookie để gữi cấp nhật
-            }
-        );
+        const response = await axiosInstance.post("/auth/refresh-token");
         return response.data;
     } catch (error) {
         console.error("Refresh token failed", error);
+        throw error;
     }
 };
 
 export const loginGG = async () => {
-    try {
-        window.location.href = `${
-            import.meta.env.VITE_BACKEND_URL
-        }/auth/google`;
-    } catch (error) {
-        console.error("Login Failed:", error);
-    }
+    window.location.href = `${import.meta.env.VITE_BACKEND_URL}/auth/google`;
 };
 
 export async function getAccessToken() {
     try {
-        const response = await axios.get(
-            `${import.meta.env.VITE_BACKEND_URL}/auth/token`,
-            {
-                withCredentials: true, // Gửi cookies và session
-            }
-        );
+        const response = await axiosInstance.get("/auth/token");
         return response.data;
     } catch (error) {
         console.error("Error fetching token:", error);
-        throw error; // Hoặc xử lý lỗi theo cách bạn muốn
+        throw error;
     }
 }
 
@@ -167,6 +136,7 @@ const getGoogleUserInfo = async (token: string): Promise<UserInfo | null> => {
         return null;
     }
 };
+
 export const userInfo = async (token: string): Promise<UserInfo | null> => {
     try {
         if (isJwtToken(token)) {
@@ -198,6 +168,7 @@ export const userInfo = async (token: string): Promise<UserInfo | null> => {
         return null;
     }
 };
+
 const isJwtToken = (token: string): boolean => {
     // JWT token thường có 3 phần (header.payload.signature), kiểm tra điều này
     return token.split(".").length === 3;
@@ -223,10 +194,10 @@ export const checkAndSetToken = async () => {
 
 export const verifyEmail = async (email: string, token: string) => {
     try {
-        const response = await axios.post(
-            `${import.meta.env.VITE_BACKEND_URL}/auth/verify-email`,
-            { email, token }
-        );
+        const response = await axiosInstance.post("/auth/verify-email", {
+            email,
+            token,
+        });
         return response.data;
     } catch (error) {
         console.error("Error verifying email:", error);
@@ -236,8 +207,8 @@ export const verifyEmail = async (email: string, token: string) => {
 
 export const getTimeRemainingForVerification = async (email: string) => {
     try {
-        const response = await axios.post(
-            `${import.meta.env.VITE_BACKEND_URL}/auth/time-remaining-verify`,
+        const response = await axiosInstance.post(
+            "/auth/time-remaining-verify",
             { email }
         );
         return response.data;
@@ -249,8 +220,8 @@ export const getTimeRemainingForVerification = async (email: string) => {
 
 export const resendVerificationEmail = async (email: string) => {
     try {
-        const response = await axios.post(
-            `${import.meta.env.VITE_BACKEND_URL}/auth/send-verification-email`,
+        const response = await axiosInstance.post(
+            "/auth/send-verification-email",
             { email }
         );
         return response.data;
@@ -262,8 +233,8 @@ export const resendVerificationEmail = async (email: string) => {
 
 export const requestResetPassword = async (email: string) => {
     try {
-        const response = await axios.post(
-            `${import.meta.env.VITE_BACKEND_URL}/auth/request-reset-password`,
+        const response = await axiosInstance.post(
+            "/auth/request-reset-password",
             { email }
         );
         return response.data;
@@ -275,11 +246,11 @@ export const requestResetPassword = async (email: string) => {
 
 export const verifyResetToken = async (email: string, token: string) => {
     try {
-        const response = await axios.post(
-            `${import.meta.env.VITE_BACKEND_URL}/auth/verify-reset-token`,
-            { email, token }
-        );
-        return response.data;
+        const response = await axiosInstance.post("/auth/verify-reset-token", {
+            email,
+            token,
+        });
+        return response;
     } catch (error) {
         console.error("Error verifying reset token:", error);
         throw error;
@@ -288,10 +259,8 @@ export const verifyResetToken = async (email: string, token: string) => {
 
 export const getTimeRemainingForReset = async (email: string) => {
     try {
-        const response = await axios.post(
-            `${
-                import.meta.env.VITE_BACKEND_URL
-            }/auth/time-remaining-reset-password`,
+        const response = await axiosInstance.post(
+            "/auth/time-remaining-reset-password",
             { email }
         );
         return response.data;
@@ -303,10 +272,10 @@ export const getTimeRemainingForReset = async (email: string) => {
 
 export const resetPassword = async (email: string, newPassword: string) => {
     try {
-        const response = await axios.post(
-            `${import.meta.env.VITE_BACKEND_URL}/auth/reset-password`,
-            { email, newPassword }
-        );
+        const response = await axiosInstance.post("/auth/reset-password", {
+            email,
+            newPassword,
+        });
         return response.data;
     } catch (error) {
         console.error("Error resetting password:", error);
