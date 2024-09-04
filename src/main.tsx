@@ -17,6 +17,7 @@ import {
     Support,
     Voucher,
     Dashboard,
+    VerifyEmail,
     ListCinema,
     UpdateCinema,
     AddNewRoom,
@@ -27,6 +28,7 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { AddNewScreening } from "./pages/admin/screening-control";
 import { ListScreening } from "./pages/admin/screening-control/list-screening/list-screening";
 import { ChooseChair } from "./pages/user/choose-chair/choose-chair";
+import { ResetPasswordPage } from "./pages/user/reset-password/reset-password";
 
 const router = createBrowserRouter([
     {
@@ -104,6 +106,14 @@ const router = createBrowserRouter([
     {
         path: "/dashboard",
         element: <Dashboard />,
+    },
+    {
+        path: "verify-email",
+        element: <VerifyEmail />,
+    },
+    {
+        path: "/reset-password",
+        element: <ResetPasswordPage />,
     },
 
     {
