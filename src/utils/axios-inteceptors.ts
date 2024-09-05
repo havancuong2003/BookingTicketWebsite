@@ -3,9 +3,13 @@ import axios, {
     AxiosError,
     InternalAxiosRequestConfig,
 } from "axios";
+import { logout } from "../services";
 
 let isRefreshing = false;
-let failedQueue: any[] = [];
+let failedQueue: Array<{
+    resolve: (value?: unknown) => void;
+    reject: (reason?: any) => void;
+}> = [];
 
 const processQueue = (
     error: AxiosError | null,
@@ -43,65 +47,99 @@ export function setupInterceptors(axiosInstance: AxiosInstance) {
                 error.config as InternalAxiosRequestConfig & {
                     _retry?: boolean;
                 };
-
+            console.log("check error", error);
+            // Check if the error is due to an expired or invalid access token
             if (error.response?.status === 401 && !originalRequest._retry) {
-                if (isRefreshing) {
-                    return new Promise((resolve, reject) => {
-                        failedQueue.push({ resolve, reject });
-                    })
-                        .then((token) => {
+                const errorData = error.response.data as {
+                    error?: string;
+                    message?: string;
+                };
+
+                if (
+                    errorData.error === "EXPIRED_ACCESS_TOKEN" ||
+                    errorData.error === "INVALID_ACCESS_TOKEN"
+                ) {
+                    if (isRefreshing) {
+                        return new Promise((resolve, reject) => {
+                            failedQueue.push({ resolve, reject });
+                        })
+                            .then((token) => {
+                                originalRequest.headers[
+                                    "Authorization"
+                                ] = `Bearer ${token}`;
+                                return axiosInstance(originalRequest);
+                            })
+                            .catch((err) => {
+                                return Promise.reject(err);
+                            });
+                    }
+
+                    originalRequest._retry = true;
+                    isRefreshing = true;
+
+                    try {
+                        console.log("im here");
+
+                        const response = await axiosInstance.post(
+                            "/auth/test-re-generate-accesstoken",
+                            {},
+                            { withCredentials: true }
+                        );
+                        console.log("check response", response);
+                        if (response.status === 201) {
+                            const newAccessToken = response.data.accessToken;
+                            console.log(
+                                "check new access token",
+                                newAccessToken
+                            );
+
+                            localStorage.setItem("accessToken", newAccessToken);
+                            axiosInstance.defaults.headers.common[
+                                "Authorization"
+                            ] = `Bearer ${newAccessToken}`;
                             originalRequest.headers[
                                 "Authorization"
-                            ] = `Bearer ${token}`;
+                            ] = `Bearer ${newAccessToken}`;
+
+                            processQueue(null, newAccessToken);
                             return axiosInstance(originalRequest);
-                        })
-                        .catch((err) => {
-                            return Promise.reject(err);
-                        });
-                }
+                        }
+                    } catch (refreshError: any) {
+                        processQueue(refreshError, null);
 
-                originalRequest._retry = true;
-                isRefreshing = true;
+                        if (
+                            refreshError.response?.status === 401 &&
+                            (refreshError.response?.data?.error ===
+                                "INVALID_REFRESH_TOKEN" ||
+                                refreshError.response?.data?.error ===
+                                    "MISSING_REFRESH_TOKEN")
+                        ) {
+                            console.log(
+                                "Refresh token is invalid or missing. Logging out..."
+                            );
+                            logout();
+                            localStorage.removeItem("accessToken");
+                            window.location.href = "/login";
+                        }
 
-                try {
-                    const response = await axiosInstance.post(
-                        "/auth/test-re-generate-accesstoken",
-                        {},
-                        { withCredentials: true }
-                    );
-                    const newAccessToken = response.data.accessToken;
-                    console.log("newAccessToken", newAccessToken);
-
-                    localStorage.setItem("accessToken", newAccessToken);
-                    axiosInstance.defaults.headers.common[
-                        "Authorization"
-                    ] = `Bearer ${newAccessToken}`;
-                    originalRequest.headers[
-                        "Authorization"
-                    ] = `Bearer ${newAccessToken}`;
-
-                    processQueue(null, newAccessToken);
-                    return axiosInstance(originalRequest);
-                } catch (refreshError: any) {
-                    processQueue(refreshError, null);
-
-                    // Check if the refresh attempt itself returned a 401
-                    if (refreshError.response?.status === 401) {
-                        console.log(
-                            "Refresh token is invalid or expired. Logging out..."
-                        );
-                        localStorage.removeItem("accessToken");
-                        // You might want to remove other auth-related items from localStorage here
-
-                        // Redirect to login page
-                        window.location.href = "/login";
+                        return Promise.reject(refreshError);
+                    } finally {
+                        isRefreshing = false;
                     }
-                    return Promise.reject(refreshError);
-                } finally {
-                    isRefreshing = false;
+                } else if (
+                    errorData.error === "INVALID_REFRESH_TOKEN" ||
+                    errorData.error === "MISSING_REFRESH_TOKEN"
+                ) {
+                    console.log(
+                        "Refresh token is invalid or missing. Logging out..."
+                    );
+                    logout();
+                    localStorage.removeItem("accessToken");
+                    window.location.href = "/login";
                 }
             }
 
+            // For other types of errors, just reject the promise
             return Promise.reject(error);
         }
     );

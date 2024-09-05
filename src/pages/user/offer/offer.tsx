@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { setupInterceptors } from "../../../utils/axios-inteceptors";
 
@@ -66,9 +66,11 @@ export const Offer = () => {
     };
 
     return (
-        <div>
+        <div className="mt-10 flex flex-col gap-5">
             <button onClick={handleTestAuth}>Test Auth</button>
+            <br />
             <button onClick={handleRefreshToken}>Refresh Token</button>
+            <br />
             <button onClick={handleCheckTimeRefreshToken}>
                 Check time refresh token
             </button>
