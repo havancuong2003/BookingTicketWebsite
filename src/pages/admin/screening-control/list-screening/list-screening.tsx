@@ -114,6 +114,9 @@ export const ListScreening = () => {
                         >
                             Edit
                         </a>
+                        <a href="/choosechair/2" className="button">
+                            Đặt vé
+                        </a>
                     </div>
                 </div>
             ))}

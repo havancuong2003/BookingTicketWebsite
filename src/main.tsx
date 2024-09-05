@@ -23,6 +23,7 @@ import {
     AddNewRoom,
     ListRoom,
     UpdateRoom,
+    AddNewCinema,
 } from "./pages";
 import { AuthProvider } from "./contexts/AuthContext";
 import { AddNewScreening } from "./pages/admin/screening-control";
@@ -118,10 +119,14 @@ const router = createBrowserRouter([
 
     {
         path: "/admin/cinema/listcinema",
+        element: <ListCinema />,
+    },
+    {
+        path: "/admin/cinema/addcinema",
         element: (
-            // <PrivateRoute>
-            <ListCinema />
-            // </PrivateRoute>
+            <Layout>
+                <AddNewCinema />
+            </Layout>
         ),
     },
     {
@@ -183,7 +188,7 @@ const router = createBrowserRouter([
     // },
 
     {
-        path: "/choosechair",
+        path: "/choosechair/2",
         element: (
             // <PrivateRoute>
             <ChooseChair />

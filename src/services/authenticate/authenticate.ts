@@ -34,7 +34,6 @@ interface UserInfo {
     email: string;
     firstName: string;
     lastName: string;
-    userId: number;
 }
 
 export const signUp = async (data: FormData) => {
@@ -121,7 +120,6 @@ const getGoogleUserInfo = async (token: string): Promise<UserInfo | null> => {
                 email: userInfo.email,
                 firstName: userInfo.given_name,
                 lastName: userInfo.family_name,
-                userId: await getIdUser(userInfo.email),
             };
         } else {
             console.error(
@@ -143,12 +141,10 @@ export const userInfo = async (token: string): Promise<UserInfo | null> => {
             // Nếu là JWT token
             const decoded = decodeJwtToken(token);
             if (decoded) {
-                const idU = getIdUser(decoded.email);
                 return {
                     email: decoded.email,
                     firstName: decoded.firstName,
                     lastName: decoded.lastName,
-                    userId: Number(idU),
                 };
             }
             console.error("Failed to decode JWT token");
@@ -280,16 +276,5 @@ export const resetPassword = async (email: string, newPassword: string) => {
     } catch (error) {
         console.error("Error resetting password:", error);
         throw error;
-    }
-};
-
-export const getIdUser = async (email: string) => {
-    try {
-        const response = await axios.get(
-            `${import.meta.env.VITE_BACKEND_URL}/user/idByEmail/${email}`
-        );
-        return response.data;
-    } catch (error) {
-        console.error(error);
     }
 };
