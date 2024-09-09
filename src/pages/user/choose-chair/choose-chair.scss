@@ -1,0 +1,133 @@
+// Biến màu sắc để dễ bảo trì
+$color-regular: #b3b3b3;
+$color-choosed: #ffcc00;
+$color-reserved: #e60000;
+$color-hover: #00b33c;
+$button-bg: #333;
+$button-hover-bg: #ff6600;
+$border-radius: 5px;
+
+// Container chính
+.container {
+    margin: 0 auto;
+    padding: 20px;
+}
+
+// Vùng chứa ghế
+.cinema-seat {
+    margin-top: 20px;
+}
+
+// Ghế cơ bản
+.single,
+.singleChoosed,
+.singleReserved {
+    border-radius: $border-radius;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &::before {
+        content: "";
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        margin-right: 8px;
+        border-radius: $border-radius;
+        vertical-align: middle;
+    }
+}
+
+// Kích thước ghế
+.md\:w-11 {
+    width: 44px; // Ghế kích thước vừa
+}
+
+.w-8 {
+    width: 32px; // Ghế kích thước nhỏ
+}
+
+.h-9 {
+    height: 36px; // Chiều cao ghế
+}
+
+// Trạng thái ghế
+.single {
+    background-color: $color-regular;
+
+    &::before {
+        background-color: $color-regular;
+    }
+}
+
+.singleChoosed {
+    background-color: $color-choosed;
+
+    &::before {
+        background-color: $color-choosed;
+    }
+}
+
+.singleReserved {
+    background-color: $color-reserved;
+    cursor: not-allowed;
+
+    &::before {
+        background-color: $color-reserved;
+    }
+}
+
+// Hiệu ứng hover cho ghế có thể chọn
+.single:hover:not(.singleReserved):not(.singleChoosed) {
+    background-color: $color-hover;
+}
+
+// Ghi chú các trạng thái ghế
+.cinema-note {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    padding: 0;
+
+    li {
+        margin-right: 15px;
+        padding: 5px;
+    }
+
+    .road::before {
+        background-color: transparent;
+        border: 1px dashed #999;
+    }
+
+    .choosing::before {
+        background-color: $color-choosed;
+    }
+
+    .busy::before {
+        background-color: $color-reserved;
+    }
+}
+
+// Button hành động
+.cinema-btn {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+
+    input {
+        padding: 10px 20px;
+        background-color: $button-bg;
+        color: white;
+        border: none;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+
+        &:hover:not([style*="pointer-events: none"]) {
+            background-color: $button-hover-bg;
+        }
+    }
+}
