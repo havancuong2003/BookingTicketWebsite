@@ -278,3 +278,22 @@ export const resetPassword = async (email: string, newPassword: string) => {
         throw error;
     }
 };
+
+export const getIdUser = async () => {
+    try {
+        const token = localStorage.getItem("accessToken");
+
+        if (!token) {
+            throw new Error("No access token found");
+        }
+        const response = await axiosInstance.post(`/auth/getInfor`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching user info:", error);
+        throw error;
+    }
+};

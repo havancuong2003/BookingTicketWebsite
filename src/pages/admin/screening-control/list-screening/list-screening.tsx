@@ -114,7 +114,10 @@ export const ListScreening = () => {
                         >
                             Edit
                         </a>
-                        <a href="/choosechair/2" className="button">
+                        <a
+                            href={`/choosechair/${sc.screeningId}`}
+                            className="button"
+                        >
                             Đặt vé
                         </a>
                     </div>

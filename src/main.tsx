@@ -188,11 +188,11 @@ const router = createBrowserRouter([
     // },
 
     {
-        path: "/choosechair/2",
+        path: "/choosechair/:idScreening",
         element: (
-            // <PrivateRoute>
-            <ChooseChair />
-            // </PrivateRoute>
+            <Layout>
+                <ChooseChair />
+            </Layout>
         ),
     },
     {

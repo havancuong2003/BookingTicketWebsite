@@ -64,3 +64,15 @@ export const convertToDateTimePublish = (date: Date): string => {
     const minutes = String(date.getMinutes()).padStart(2, "0");
     return `${month}/${day} ${hours}:${minutes}`;
 };
+export const getInforScreening = async (screeningId: any) => {
+    try {
+        const response = await axios.get(
+            `${
+                import.meta.env.VITE_BACKEND_URL
+            }/screening/inforScreening/${screeningId}`
+        );
+        return response.data;
+    } catch (error) {
+        console.error(error);
+    }
+};
