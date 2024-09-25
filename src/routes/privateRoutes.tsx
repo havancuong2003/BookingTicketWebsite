@@ -11,5 +11,14 @@
 //         return <Navigate to="/login" />;
 //     }
 
-//     return children;
+//     if (roleUser !== role) {
+//         console.log("check 2 role", roleUser, role);
+
+//         console.log("role diff", isAuthenticated);
+//         return <Navigate to="/" replace />;
+//     }
+
+//     return <>{children}</>;
 // };
+
+// export default PrivateRoute;

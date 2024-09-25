@@ -13,16 +13,18 @@
         "deploy": "gh-pages -d dist"
     },
     "dependencies": {
-        "@emotion/react": "^11.13.0",
+        "@emotion/react": "^11.13.3",
         "@emotion/styled": "^11.13.0",
         "@fontsource/roboto": "^5.0.14",
         "@mui/icons-material": "^5.16.7",
         "@mui/material": "^5.16.7",
         "@mui/styled-engine-sc": "^6.0.0-alpha.18",
         "@mui/x-charts": "^7.12.1",
+        "@mui/x-date-pickers": "^7.14.0",
         "axios": "^1.7.3",
         "booking_ticket_website": "file:",
         "clsx": "^2.1.1",
+        "dayjs": "^1.11.13",
         "dotenv": "^16.4.5",
         "gh-pages": "^6.1.1",
         "js-cookie": "^3.0.5",
@@ -36,6 +38,8 @@
         "react-router-dom": "^6.26.0",
         "redux": "^5.0.1",
         "sass": "^1.77.8",
+        "socket.io": "^4.7.5",
+        "socket.io-client": "^4.7.5",
         "styled-components": "^6.1.12"
     },
     "devDependencies": {

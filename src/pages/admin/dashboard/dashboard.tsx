@@ -1,6 +1,4 @@
-import { Button } from "@mui/material";
 import { Chart } from "react-google-charts";
-import { Link } from "react-router-dom";
 
 export const data = [
     ["Element", "Lượt xem", { role: "style" }],
@@ -48,9 +46,6 @@ export function Dashboard() {
     return (
         <>
             <div>
-                <Button>
-                    <Link to="/">Home</Link>
-                </Button>
                 <div style={{ display: "flex" }}>
                     <Chart
                         chartType="Bar"

@@ -15,10 +15,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             }}
         >
             <Header />
-            <div
-                style={{ flex: "1 0 auto", minHeight: "80vh" }}
-                className="bg-slate-100"
-            >
+            <div style={{ flex: "1 0 auto" }} className="bg-slate-100">
                 {children}
             </div>
             <Footer />
