@@ -52,7 +52,9 @@ export const Offer = () => {
                 "/auth/check-refresh-token-expiration"
             );
             console.log(response);
-            setMessage(response.data.message);
+            setMessage(
+                response.data.message + " " + response.data.timeRemaining
+            );
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 setMessage(
