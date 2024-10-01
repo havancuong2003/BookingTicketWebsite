@@ -1,5 +1,4 @@
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
 import { setupInterceptors } from "../../../utils";
 
 // Create a new axios instance
@@ -13,7 +12,7 @@ setupInterceptors(axiosInstance);
 
 export const getUserInfo = async () => {
     try {
-        const response = await axiosInstance.get("/user/info");
+        const response = await axiosInstance.post("/user/getInfo");
         return response.data;
     } catch (error) {
         console.error("Error fetching user info:", error);

@@ -8,28 +8,39 @@ import {
     FaStar,
     FaTicketAlt,
 } from "react-icons/fa";
-import { motion } from "framer-motion";
-import { getUserInfo } from "../../../services/user/user-info/user-info"; // Import đúng nếu có API
+import { getUserInfo } from "../../../services/user/user-info/user-info";
+import { add } from "ramda";
 
+type UserType = {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    role: string;
+    phoneNumber: string;
+    picture: string;
+};
 export const Setting = () => {
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [editField, setEditField] = useState<string | null>(null);
     const [formData, setFormData] = useState({
-        name: "Nguyễn Văn A",
-        phone: "0123456789",
-        address: "123 Đường ABC, Quận 1, TP.HCM",
-        email: "nguyenvana@example.com",
-        password: "",
+        id: "",
+        email: "",
+        firstName: "",
+        lastName: "",
+        role: "",
+        phoneNumber: "",
+        picture: "",
     });
 
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
-                // const userInfo = await getUserInfo();
-                // setUser(userInfo);
-                // setFormData(userInfo);
+                const userInfo = (await getUserInfo()) as UserType; // Call getUserInfo instead
+                setUser(userInfo);
+                setFormData(userInfo);
             } catch (err) {
                 setError("Không thể lấy thông tin người dùng.");
             } finally {
@@ -71,7 +82,8 @@ export const Setting = () => {
                     >
                         <div className="h-full flex flex-col justify-center items-center text-white bg-black bg-opacity-50 p-4">
                             <h2 className="text-4xl font-bold mb-2">
-                                Xin chào, {formData.name}
+                                Xin chào,{" "}
+                                {formData.firstName + " " + formData.lastName}
                             </h2>
                             <p className="text-xl">Thành viên từ 2021</p>
                         </div>
@@ -85,7 +97,9 @@ export const Setting = () => {
                             <SettingField
                                 icon={<FaUser />}
                                 label="Tên"
-                                value={formData.name}
+                                value={
+                                    formData.firstName + " " + formData.lastName
+                                }
                                 editField={editField}
                                 field="name"
                                 handleChange={handleChange}
@@ -96,7 +110,7 @@ export const Setting = () => {
                             <SettingField
                                 icon={<FaPhone />}
                                 label="Số điện thoại"
-                                value={formData.phone}
+                                value={formData.phoneNumber}
                                 editField={editField}
                                 field="phone"
                                 handleChange={handleChange}
@@ -104,7 +118,7 @@ export const Setting = () => {
                                 handleSave={handleSave}
                             />
                             {/* Address */}
-                            <SettingField
+                            {/* <SettingField
                                 icon={<FaMapMarkerAlt />}
                                 label="Địa chỉ"
                                 value={formData.address}
@@ -113,7 +127,7 @@ export const Setting = () => {
                                 handleChange={handleChange}
                                 handleEdit={handleEdit}
                                 handleSave={handleSave}
-                            />
+                            /> */}
                             {/* Email */}
                             <SettingField
                                 icon={<FaEnvelope />}
