@@ -27,6 +27,7 @@ import {
     MenuList,
     AddMenu,
     UpdateMenu,
+    Setting,
 } from "./pages";
 import { AuthProvider } from "./contexts/AuthContext";
 import { AddNewScreening } from "./pages/admin/screening-control";
@@ -211,6 +212,10 @@ const router = createBrowserRouter([
     {
         path: "/admin/updatemenu/:id",
         element: <UpdateMenu />,
+    },
+    {
+        path: "/user/setting",
+        element: <Setting />,
     },
     {
         path: "*",

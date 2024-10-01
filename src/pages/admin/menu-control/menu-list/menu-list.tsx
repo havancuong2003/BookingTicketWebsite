@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from "react";
 import {
     getMenuItems,
+    getCombos,
     deleteMenuItem,
-    getCombos, // Đảm bảo import getCombos
     deleteCombo,
 } from "../../../../services";
-
 import { Snackbar, Alert } from "@mui/material";
 import { AddMenu } from "../add-menu";
-import { useMenu } from "../../../../contexts"; // Đảm bảo ComboItem được xuất khẩu từ menuContext
+import { useMenu } from "../../../../contexts";
 import { AddCombo } from "../add-combo";
-import { ComboItem } from "../../../../models";
+
+import { motion } from "framer-motion";
+import { FaUtensils, FaGlassWhiskey } from "react-icons/fa";
 
 export const MenuList: React.FC = () => {
     const { menuItems, setMenuItems, comboItems, setComboItems, addCombo } =
-        useMenu(); // Lấy comboItems từ context
+        useMenu();
     const [message, setMessage] = useState<string>("");
     const [openSnackbar, setOpenSnackbar] = useState(false);
 
@@ -29,18 +30,17 @@ export const MenuList: React.FC = () => {
         };
 
         const fetchCombos = async () => {
-            // Thêm hàm lấy danh sách combo
             try {
                 const combos = await getCombos();
-                setComboItems(combos); // Cập nhật state với danh sách combo
+                setComboItems(combos);
             } catch (error) {
                 console.error("Error fetching combos:", error);
             }
         };
 
         fetchMenuItems();
-        fetchCombos(); // Gọi hàm lấy danh sách combo
-    }, [setMenuItems, setComboItems]); // Thêm setComboItems vào dependency array
+        fetchCombos();
+    }, [setMenuItems, setComboItems]);
 
     const handleDeleteMenuItem = async (id: number) => {
         try {
@@ -56,7 +56,7 @@ export const MenuList: React.FC = () => {
     };
 
     const handleDeleteCombo = async (id: number | undefined) => {
-        if (id === undefined) return; // Prevent deletion if id is undefined
+        if (id === undefined) return;
         try {
             await deleteCombo(id);
             setComboItems(comboItems.filter((combo) => combo.id !== id));
@@ -69,93 +69,103 @@ export const MenuList: React.FC = () => {
         }
     };
 
-    const handleAddCombo = async (newCombo: ComboItem) => {
-        try {
-            await addCombo(newCombo); // Gọi hàm addCombo từ context
-            setMessage("Combo added successfully!");
-            setOpenSnackbar(true);
-        } catch (error) {
-            console.error("Error adding combo:", error);
-            setMessage("Failed to add combo.");
-            setOpenSnackbar(true);
-        }
-    };
-
     const handleCloseSnackbar = () => {
         setOpenSnackbar(false);
     };
 
     return (
-        <div className="p-4">
+        <div className="max-w-7xl mx-auto p-6 bg-white rounded-lg shadow-lg">
             <h1 className="text-3xl font-bold mb-6 text-center text-blue-600">
                 Movie Ticket Booking - Food & Drinks
             </h1>
-            <AddMenu />
-            <AddCombo onAdd={handleAddCombo} />
-            <h1 className="text-2xl font-bold mt-4">Menu Items</h1>
-            <ul className="space-y-2">
-                {menuItems.map((item) => (
-                    <li
-                        key={item.id}
-                        className="flex justify-between items-center p-2 border rounded-md shadow-md"
-                    >
-                        <h1>{item.id}</h1>
-                        <div className="flex items-center">
-                            {item.image && (
-                                <img
-                                    src={item.image}
-                                    alt={item.name}
-                                    className="w-16 h-16 object-cover rounded-md mr-4"
-                                />
-                            )}
-                            <span className="text-lg">
-                                {item.name} - {item.price} - {item.type}
-                            </span>
-                        </div>
-                        <button
-                            onClick={() =>
-                                item.id !== undefined &&
-                                handleDeleteMenuItem(item.id)
-                            }
-                            className="text-red-600 hover:text-red-800"
-                        >
-                            Delete
-                        </button>
-                    </li>
-                ))}
-            </ul>
-            <h1 className="text-2xl font-bold mt-4">Combos</h1>
-            <ul className="space-y-2">
-                {comboItems.map(
-                    (
-                        combo // Sử dụng comboItems từ context
-                    ) => (
-                        <li
-                            key={combo.id}
-                            className="flex justify-between items-center p-2 border rounded-md shadow-md"
-                        >
-                            <div className="flex items-center">
-                                {combo.image && (
-                                    <img
-                                        src={combo.image}
-                                        alt={combo.name}
-                                        className="w-16 h-16 object-cover rounded-md mr-4"
-                                    />
-                                )}
-                                <span className="text-lg">
-                                    {combo.name} - {combo.price}
-                                </span>
-                            </div>
-                            <button
-                                onClick={() => handleDeleteCombo(combo.id)}
-                                className="text-red-600 hover:text-red-800"
+            <div className="grid md:grid-cols-2 gap-8 mb-8">
+                <AddMenu />
+                <AddCombo onAdd={addCombo} />
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-8">
+                {/* Individual Items Section */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className="bg-gray-50 p-6 rounded-lg"
+                >
+                    <h2 className="text-2xl font-semibold mb-4 flex items-center">
+                        <FaUtensils className="mr-2" /> Menu Items
+                    </h2>
+                    <ul className="space-y-2">
+                        {menuItems?.map((item) => (
+                            <li
+                                key={item.id}
+                                className="flex justify-between items-center p-2 border rounded-md shadow-md"
                             >
-                                Delete
-                            </button>
-                        </li>
-                    )
-                )}
-            </ul>
+                                <h1>{item.id}</h1>
+                                <div className="flex items-center">
+                                    {item.image && (
+                                        <img
+                                            src={item.image}
+                                            alt={item.name}
+                                            className="w-16 h-16 object-cover rounded-md mr-4"
+                                        />
+                                    )}
+                                    <span className="text-lg">
+                                        {item.name} - {item.price} - {item.type}
+                                    </span>
+                                </div>
+                                <button
+                                    onClick={() =>
+                                        item.id !== undefined &&
+                                        handleDeleteMenuItem(item.id)
+                                    }
+                                    className="text-red-600 hover:text-red-800"
+                                >
+                                    Delete
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </motion.div>
+
+                {/* Combos Section */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                    className="bg-gray-50 p-6 rounded-lg"
+                >
+                    <h2 className="text-2xl font-semibold mb-4 flex items-center">
+                        <FaGlassWhiskey className="mr-2" /> Combos
+                    </h2>
+                    <ul className="space-y-2">
+                        {comboItems.map((combo) => (
+                            <li
+                                key={combo.id}
+                                className="flex justify-between items-center p-2 border rounded-md shadow-md"
+                            >
+                                <div className="flex items-center">
+                                    {combo.image && (
+                                        <img
+                                            src={combo.image}
+                                            alt={combo.name}
+                                            className="w-16 h-16 object-cover rounded-md mr-4"
+                                        />
+                                    )}
+                                    <span className="text-lg">
+                                        {combo.name} - {combo.price}
+                                    </span>
+                                </div>
+                                <button
+                                    onClick={() => handleDeleteCombo(combo.id)}
+                                    className="text-red-600 hover:text-red-800"
+                                >
+                                    Delete
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </motion.div>
+            </div>
             <Snackbar
                 open={openSnackbar}
                 autoHideDuration={6000}

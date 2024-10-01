@@ -3,13 +3,20 @@ import { useMenu } from "../../../../contexts"; // Nhập useMenu để lấy me
 import { ComboItem, MenuItem } from "../../../../models"; // Nhập ComboItem từ models
 import { Button, TextField } from "@mui/material"; // Nhập Button và TextField từ MUI
 import { useForm } from "react-hook-form";
+import { motion } from "framer-motion";
+import { FaGlassWhiskey } from "react-icons/fa";
 
 interface AddComboProps {
     onAdd: (newCombo: ComboItem) => void; // Hàm callback để thêm combo
 }
 
 export const AddCombo: React.FC<AddComboProps> = ({ onAdd }) => {
-    const { register, handleSubmit, setValue } = useForm();
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors },
+    } = useForm();
     const { menuItems } = useMenu();
     const [selectedItems, setSelectedItems] = useState<
         { id: number; quantity: number }[]
@@ -44,97 +51,163 @@ export const AddCombo: React.FC<AddComboProps> = ({ onAdd }) => {
         };
         onAdd(newCombo);
         setSelectedItems([]);
+        reset(); // Reset form after submission
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="mb-4">
-            <h2 className="text-xl font-bold">Add Combo</h2>
-            <TextField
-                label="Combo Name"
-                {...register("comboName", { required: true })}
-                className="mb-2"
-            />
-            <TextField
-                type="number"
-                label="Combo Price"
-                {...register("comboPrice", { required: true })}
-                className="mb-2 ml-2"
-            />
-            <TextField
-                label="Combo Image URL"
-                {...register("comboImage", { required: true })}
-                className="mb-2"
-            />
-            <div className="mt-2">
-                {menuItems.map((item) => {
-                    const selectedItem = selectedItems.find(
-                        (selected) => selected.id === item.id
-                    );
-                    const quantity = selectedItem ? selectedItem.quantity : 0;
-
-                    return (
-                        <div
-                            key={item.id}
-                            className="flex items-center justify-between mb-2"
-                        >
-                            <span>
-                                {item.name} - {item.price}
-                            </span>
-                            <div className="flex items-center">
-                                <Button
-                                    variant="outlined"
-                                    onClick={() => {
-                                        if (item.id !== undefined) {
-                                            handleQuantityChange(
-                                                item.id,
-                                                (quantity || 0) - 1
-                                            );
-                                        }
-                                    }}
-                                    disabled={quantity <= 0}
-                                >
-                                    -
-                                </Button>
-                                <TextField
-                                    type="number"
-                                    value={quantity}
-                                    onChange={(e) => {
-                                        if (item.id !== undefined) {
-                                            handleQuantityChange(
-                                                item.id,
-                                                Number(e.target.value)
-                                            );
-                                        }
-                                    }}
-                                    className="mx-2 w-16"
-                                    inputProps={{ min: 0 }}
-                                />
-                                <Button
-                                    variant="outlined"
-                                    onClick={() => {
-                                        if (item.id !== undefined) {
-                                            handleQuantityChange(
-                                                item.id,
-                                                quantity + 1
-                                            );
-                                        }
-                                    }}
-                                >
-                                    +
-                                </Button>
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
-            <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                className="mt-2"
+        <div>
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="bg-gray-50 p-6 rounded-lg"
             >
-                Add Combo
-            </Button>
-        </form>
+                <h2 className="text-2xl font-semibold mb-4 flex items-center">
+                    <FaGlassWhiskey className="mr-2" /> Combo Item
+                </h2>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <div className="mb-4">
+                        <label
+                            htmlFor="comboName"
+                            className="block text-sm font-medium text-gray-700"
+                        >
+                            Combo Name
+                        </label>
+                        <TextField
+                            id="comboName"
+                            {...register("comboName", {
+                                required: "Combo name is required",
+                            })} // Đăng ký trường comboName
+                            error={!!errors.comboName}
+                            helperText={
+                                typeof errors.comboName?.message === "string"
+                                    ? errors.comboName.message
+                                    : ""
+                            }
+                            className="mt-1 block w-full"
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <label
+                            htmlFor="comboPrice"
+                            className="block text-sm font-medium text-gray-700"
+                        >
+                            Combo Price
+                        </label>
+                        <TextField
+                            type="number"
+                            id="comboPrice"
+                            {...register("comboPrice", {
+                                required: "Combo price is required",
+                                min: {
+                                    value: 0,
+                                    message: "Price must be positive",
+                                },
+                            })} // Đăng ký trường comboPrice
+                            error={!!errors.comboPrice}
+                            helperText={
+                                typeof errors.comboPrice?.message === "string"
+                                    ? errors.comboPrice.message
+                                    : ""
+                            }
+                            className="mt-1 block w-full"
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <label
+                            htmlFor="comboImage"
+                            className="block text-sm font-medium text-gray-700"
+                        >
+                            Combo Image URL
+                        </label>
+                        <TextField
+                            id="comboImage"
+                            {...register("comboImage", {
+                                required: "Image URL is required",
+                            })} // Đăng ký trường comboImage
+                            error={!!errors.comboImage}
+                            helperText={
+                                typeof errors.comboImage?.message === "string"
+                                    ? errors.comboImage.message
+                                    : ""
+                            }
+                            className="mt-1 block w-full"
+                        />
+                    </div>
+                    <div className="mt-2">
+                        {menuItems.map((item) => {
+                            const selectedItem = selectedItems.find(
+                                (selected) => selected.id === item.id
+                            );
+                            const quantity = selectedItem
+                                ? selectedItem.quantity
+                                : 0;
+
+                            return (
+                                <div
+                                    key={item.id}
+                                    className="flex items-center justify-between mb-2"
+                                >
+                                    <span>
+                                        {item.name} - {item.price}
+                                    </span>
+                                    <div className="flex items-center">
+                                        <Button
+                                            variant="outlined"
+                                            onClick={() => {
+                                                if (item.id !== undefined) {
+                                                    handleQuantityChange(
+                                                        item.id,
+                                                        (quantity || 0) - 1
+                                                    );
+                                                }
+                                            }}
+                                            disabled={quantity <= 0}
+                                        >
+                                            -
+                                        </Button>
+                                        <TextField
+                                            type="number"
+                                            value={quantity}
+                                            onChange={(e) => {
+                                                if (item.id !== undefined) {
+                                                    handleQuantityChange(
+                                                        item.id,
+                                                        Number(e.target.value)
+                                                    );
+                                                }
+                                            }}
+                                            className="mx-2 w-16"
+                                            inputProps={{ min: 0 }}
+                                        />
+                                        <Button
+                                            variant="outlined"
+                                            onClick={() => {
+                                                if (item.id !== undefined) {
+                                                    handleQuantityChange(
+                                                        item.id,
+                                                        quantity + 1
+                                                    );
+                                                }
+                                            }}
+                                        >
+                                            +
+                                        </Button>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        className="mt-2"
+                    >
+                        Add Combo
+                    </Button>
+                </form>
+            </motion.div>
+        </div>
     );
 };
