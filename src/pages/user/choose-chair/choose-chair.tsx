@@ -95,10 +95,13 @@ export const ChooseChair = () => {
         const getInforUser = async () => {
             try {
                 const data = await getIdUser();
-                if (!data?.id) {
+                console.log("data", data);
+
+                if (!data) {
                     setOpenLoginAlert(true);
                     return;
                 }
+
                 updateSeatsByUserToDefault(data.id);
                 const seatsByUser = await getAllSeatByUser(data.id);
                 if (seatsByUser.length > 0) {
@@ -143,6 +146,8 @@ export const ChooseChair = () => {
     useEffect(() => {
         const fetchData = async () => {
             const userIf = await getIdUser();
+            console.log("userIf", userIf);
+
             setUserData(userIf);
         };
         fetchData();

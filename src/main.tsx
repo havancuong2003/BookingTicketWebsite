@@ -24,12 +24,16 @@ import {
     ListRoom,
     UpdateRoom,
     AddNewCinema,
+    MenuList,
+    AddMenu,
+    UpdateMenu,
 } from "./pages";
 import { AuthProvider } from "./contexts/AuthContext";
 import { AddNewScreening } from "./pages/admin/screening-control";
 import { ListScreening } from "./pages/admin/screening-control/list-screening/list-screening";
 import { ChooseChair } from "./pages/user/choose-chair/choose-chair";
 import { ResetPasswordPage } from "./pages/user/reset-password/reset-password";
+import { MenuProvider } from "./contexts";
 
 const router = createBrowserRouter([
     {
@@ -195,6 +199,19 @@ const router = createBrowserRouter([
             </Layout>
         ),
     },
+
+    {
+        path: "/admin/menuList",
+        element: <MenuList />,
+    },
+    {
+        path: "/admin/addmenu",
+        element: <AddMenu />,
+    },
+    {
+        path: "/admin/updatemenu/:id",
+        element: <UpdateMenu />,
+    },
     {
         path: "*",
         element: <NotFound />,
@@ -204,7 +221,9 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
         <AuthProvider>
-            <RouterProvider router={router} />
+            <MenuProvider>
+                <RouterProvider router={router} />
+            </MenuProvider>
         </AuthProvider>
     </React.StrictMode>
 );
