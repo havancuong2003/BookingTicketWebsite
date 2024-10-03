@@ -19,7 +19,6 @@ import {
     TableRow,
     Typography,
     Paper,
-    Grid,
 } from "@mui/material";
 
 type Seat = {
