@@ -10,12 +10,35 @@ export const chooseChair = async (id: any) => {
         console.error(error);
     }
 };
+export const bookingChair = async (id: any) => {
+    try {
+        const response = await axios.get(
+            `${import.meta.env.VITE_BACKEND_URL}/choosechair/booking/${id}`
+        );
+        return response.data;
+    } catch (error) {
+        console.error(error);
+    }
+};
 
 export const updateStatusSeat = async (id: any, data: any) => {
     try {
-        const response = await axios.put(
-            `${import.meta.env.VITE_BACKEND_URL}/seat/updatestatus/${id}`,
+        const response = await axios.post(
+            `${import.meta.env.VITE_BACKEND_URL}/booking/updatestatus/${id}`,
             data
+        );
+        return response.data;
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+export const deleteSeatChoose = async (userId: any, seatId: any) => {
+    try {
+        const response = await axios.delete(
+            `${
+                import.meta.env.VITE_BACKEND_URL
+            }/booking/deleteSeatChooseByUserId/${userId}/${seatId}`
         );
         return response.data;
     } catch (error) {
@@ -27,7 +50,7 @@ export const getAllSeatByUser = async (idScreening: any) => {
         const response = await axios.get(
             `${
                 import.meta.env.VITE_BACKEND_URL
-            }/seat/findSeatsByUserId/${idScreening}`
+            }/booking/findSeatsByUserId/${idScreening}`
         );
         return response.data;
     } catch (error) {
@@ -39,7 +62,7 @@ export const getAllSeatDoneByUser = async (idScreening: any) => {
         const response = await axios.get(
             `${
                 import.meta.env.VITE_BACKEND_URL
-            }/seat/findSeatsDoneByUserId/${idScreening}`
+            }/booking/findSeatsDoneByUserId/${idScreening}`
         );
         return response.data;
     } catch (error) {
@@ -48,10 +71,46 @@ export const getAllSeatDoneByUser = async (idScreening: any) => {
 };
 export const updateSeatsByUserToDefault = async (userId: any) => {
     try {
+        const response = await axios.delete(
+            `${
+                import.meta.env.VITE_BACKEND_URL
+            }/booking/updateStatusByUserIdToDefault/${userId}`
+        );
+        return response.data;
+    } catch (error) {
+        console.error(error);
+    }
+};
+export const findSeatsBookingByUserId = async (userId: any) => {
+    try {
+        const response = await axios.get(
+            `${
+                import.meta.env.VITE_BACKEND_URL
+            }/booking/findSeatsBookingByUserId/${userId}`
+        );
+        return response.data;
+    } catch (error) {
+        console.error(error);
+    }
+};
+export const updateSeatsDoneByUserId = async (userId: any) => {
+    try {
         const response = await axios.put(
             `${
                 import.meta.env.VITE_BACKEND_URL
-            }/seat/updateStatusByUserIdToDefault/${userId}`
+            }/booking/updateSeatsDoneByUserId/${userId}`
+        );
+        return response.data;
+    } catch (error) {
+        console.error(error);
+    }
+};
+export const findSeatsAndTypeSeatBookingByUserId = async (userId: any) => {
+    try {
+        const response = await axios.get(
+            `${
+                import.meta.env.VITE_BACKEND_URL
+            }/booking/findSeatsAndTypeSeatBookingByUserId/${userId}`
         );
         return response.data;
     } catch (error) {

@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
-import { listCinema, listMovie, listRoom } from "../../../../services";
+import {
+    detailRoom,
+    listCinema,
+    listMovie,
+    listRoom,
+} from "../../../../services";
 import { Button, TextField, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
     convertToDateTimeLocal,
     createScreening,
@@ -16,29 +21,40 @@ type FormData = {
     endTime: string;
 };
 
-type Cinema = {
-    cinemaId: number;
-    name: string;
-};
 type Movie = {
     id: number;
     title: string;
     duration: number;
 };
-type Room = {
-    id: number;
+type RoomDetails = {
     roomId: number;
     roomCode: string;
+    cinemaId: number;
+    cinemaName: string;
 };
 
 export const AddNewScreening = () => {
-    const [cinema, setCinemas] = useState<Cinema[]>([]);
+    const { roomId } = useParams();
     const [movie, setMovies] = useState<Movie[]>([]);
-    const [room, setRooms] = useState<Room[]>([]);
 
     const { register, handleSubmit } = useForm<FormData>();
-    const navigate = useNavigate();
+    const [roomdetails, setRoomsDetails] = useState<RoomDetails>();
 
+    const navigate = useNavigate();
+    useEffect(() => {
+        const fetchData = async () => {
+            setRoomsDetails(await detailRoom(roomId));
+        };
+
+        fetchData();
+    }, [roomdetails]);
+    useEffect(() => {
+        const fetchData = async () => {
+            setMovies(await listMovie());
+        };
+
+        fetchData();
+    }, []);
     const onSubmit = async (data: FormData) => {
         const durationMovie = movie.find(
             (mv) => mv.id == data.movieId
@@ -51,42 +67,22 @@ export const AddNewScreening = () => {
         const endTimee = convertToDateTimeLocal(date);
         const roomData = {
             movieId: Number(data.movieId),
-            cinemaId: Number(data.cinemaId),
-            roomId: Number(data.roomId),
+            roomId: Number(roomId),
             startTime: new Date(data.startTime).toISOString(),
-
             endTime: new Date(endTimee).toISOString(),
         };
         console.log(endTimee);
 
-        createScreening(roomData, navigate);
+        createScreening(roomData, navigate, roomId);
     };
-    useEffect(() => {
-        const fetchData = async () => {
-            setCinemas(await listCinema());
-        };
-
-        fetchData();
-    }, []);
-    useEffect(() => {
-        const fetchData = async () => {
-            setMovies(await listMovie());
-        };
-
-        fetchData();
-    }, []);
-    useEffect(() => {
-        const fetchData = async () => {
-            setRooms(await listRoom());
-        };
-
-        fetchData();
-    }, []);
 
     return (
         <div className="flex justify-center">
             <div className="w-full max-w-lg">
-                <h1 className="text-center mb-6">Thêm khung gio chieu mới</h1>
+                <h1 className="text-center mb-6">
+                    Thêm khung giờ chiếu mới cho phòng {roomdetails?.roomCode},
+                    rạp {roomdetails?.cinemaName}
+                </h1>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <p>Phim</p>
                     <div className="grid grid-cols-2 gap-4">
@@ -101,31 +97,8 @@ export const AddNewScreening = () => {
                             ))}
                         </select>
                         <br />
-                        <p>Rap chieu</p>
                         <br />
-                        <select id="cinemaId" {...register("cinemaId")}>
-                            {cinema.map((cnm) => (
-                                <option
-                                    value={cnm.cinemaId.toString()}
-                                    style={{ border: "1px solid black" }}
-                                >
-                                    {cnm.name}
-                                </option>
-                            ))}
-                        </select>
-                        <br />
-                        <p>Phong chieu</p>
-                        <br />
-                        <select id="roomId" {...register("roomId")}>
-                            {room.map((r) => (
-                                <option
-                                    value={r.roomId.toString()}
-                                    style={{ border: "1px solid black" }}
-                                >
-                                    {r.roomCode}
-                                </option>
-                            ))}
-                        </select>
+
                         <br />
                         <p>thoi gian bat dau</p>
                         <TextField
@@ -138,20 +111,6 @@ export const AddNewScreening = () => {
                                 required: "Thoi gian bat dau là bắt buộc.",
                             })}
                         />
-                        {/* <p>thoi gian ket thuc</p> */}
-                        {/* <TextField
-                            id="endTime"
-                            variant="outlined"
-                            type="datetime-local"
-                            fullWidth
-                            margin="normal"
-                            {...register("endTime", {
-                                required: "Thoi gian ket thuc là bắt buộc.",
-                            })}
-                        /> */}
-
-                        {/* <DateTimePicker />
-                        <Typography>Stored value: </Typography> */}
                     </div>
                     <Button
                         type="submit"
