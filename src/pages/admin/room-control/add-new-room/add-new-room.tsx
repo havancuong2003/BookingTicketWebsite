@@ -1,7 +1,7 @@
 import { Button, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { createRoom, listCinema } from "../../../../services";
 type FormData = {
     roomCodeInput: string;
@@ -13,6 +13,7 @@ type Cinema = {
 };
 
 export const AddNewRoom = () => {
+    const { cinemaId } = useParams();
     const [cinemas, setCinemas] = useState<Cinema[]>([]);
 
     useEffect(() => {
@@ -29,10 +30,10 @@ export const AddNewRoom = () => {
     const onSubmit = async (data: FormData) => {
         const roomData = {
             roomCode: data.roomCodeInput,
-            cinemaId: Number(data.cinemaIDInput),
+            cinemaId: Number(cinemaId),
         };
 
-        createRoom(roomData, navigate);
+        createRoom(roomData, navigate, cinemaId);
     };
 
     return (
@@ -51,20 +52,6 @@ export const AddNewRoom = () => {
                                 required: "Ma phong là bắt buộc.",
                             })}
                         />
-
-                        <select
-                            id="cinemaIDInput"
-                            {...register("cinemaIDInput")}
-                        >
-                            {cinemas.map((room) => (
-                                <option
-                                    value={room.cinemaId.toString()}
-                                    style={{ border: "1px solid black" }}
-                                >
-                                    {room.name}
-                                </option>
-                            ))}
-                        </select>
                     </div>
                     <Button
                         type="submit"

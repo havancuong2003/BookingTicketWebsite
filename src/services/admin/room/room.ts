@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const listRoom = async () => {
+export const getAllRoom = async () => {
     try {
         const response = await axios.get(
             `${import.meta.env.VITE_BACKEND_URL}/room/getAll`
@@ -10,14 +10,24 @@ export const listRoom = async () => {
         console.error(error);
     }
 };
-export const createRoom = async (data: any, navigate: any) => {
+export const listRoom = async (cinemaId: any) => {
+    try {
+        const response = await axios.get(
+            `${import.meta.env.VITE_BACKEND_URL}/room/getByCinemaId/${cinemaId}`
+        );
+        return response.data;
+    } catch (error) {
+        console.error(error);
+    }
+};
+export const createRoom = async (data: any, navigate: any, cinemaId: any) => {
     try {
         const response = await axios.post(
             `${import.meta.env.VITE_BACKEND_URL}/room/create`,
             data
         );
         console.log("Room added successfully:", response.data);
-        navigate("/admin/room/listroom");
+        navigate(`/admin/room/listroom/${cinemaId}`);
     } catch (error) {
         console.log(data);
         console.error("Error adding room:", error, data);

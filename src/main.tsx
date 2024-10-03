@@ -30,6 +30,7 @@ import { AddNewScreening } from "./pages/admin/screening-control";
 import { ListScreening } from "./pages/admin/screening-control/list-screening/list-screening";
 import { ChooseChair } from "./pages/user/choose-chair/choose-chair";
 import { ResetPasswordPage } from "./pages/user/reset-password/reset-password";
+import { PaymentSuccess } from "./pages/common/payment/payment_success";
 
 const router = createBrowserRouter([
     {
@@ -119,7 +120,11 @@ const router = createBrowserRouter([
 
     {
         path: "/admin/cinema/listcinema",
-        element: <ListCinema />,
+        element: (
+            <Layout>
+                <ListCinema />
+            </Layout>
+        ),
     },
     {
         path: "/admin/cinema/addcinema",
@@ -132,50 +137,50 @@ const router = createBrowserRouter([
     {
         path: "/admin/cinema/details/:id",
         element: (
-            // <PrivateRoute>
-            <UpdateCinema />
-            // </PrivateRoute>
+            <Layout>
+                <UpdateCinema />
+            </Layout>
         ),
     },
     {
-        path: "/admin/room/addroom",
+        path: "/admin/room/addroom/:cinemaId",
         element: (
-            // <PrivateRoute>
-            <AddNewRoom />
-            // </PrivateRoute>
+            <Layout>
+                <AddNewRoom />
+            </Layout>
         ),
     },
 
     {
-        path: "/admin/room/listroom",
+        path: "/admin/room/listroom/:cinemaId",
         element: (
-            // <PrivateRoute>
-            <ListRoom />
-            // {/* // </PrivateRoute> */}
+            <Layout>
+                <ListRoom />
+            </Layout>
         ),
     },
     {
         path: "/admin/room/details/:id",
         element: (
-            // <PrivateRoute>
-            <UpdateRoom />
-            // </PrivateRoute>
+            <Layout>
+                <UpdateRoom />
+            </Layout>
         ),
     },
     {
-        path: "/admin/screening/addscreening",
+        path: "/admin/screening/addscreening/:roomId",
         element: (
-            // <PrivateRoute>
-            <AddNewScreening />
-            // </PrivateRoute>
+            <Layout>
+                <AddNewScreening />
+            </Layout>
         ),
     },
     {
-        path: "/admin/screening/listscreening",
+        path: "/admin/screening/listscreening/:roomId",
         element: (
-            // <PrivateRoute>
-            <ListScreening />
-            // </PrivateRoute>
+            <Layout>
+                <ListScreening />
+            </Layout>
         ),
     },
     // {
@@ -192,6 +197,14 @@ const router = createBrowserRouter([
         element: (
             <Layout>
                 <ChooseChair />
+            </Layout>
+        ),
+    },
+    {
+        path: "order/vnpay_return/*",
+        element: (
+            <Layout>
+                <PaymentSuccess />
             </Layout>
         ),
     },
