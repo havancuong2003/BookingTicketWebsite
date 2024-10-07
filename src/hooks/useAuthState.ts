@@ -6,7 +6,7 @@ import {
     logout as logoutService,
     checkAndSetToken,
     signUp,
-} from "../services/authenticate/authenticate";
+} from "../services";
 import axios from "axios";
 
 type FormData = {
@@ -16,7 +16,7 @@ type FormData = {
     lastName: string;
 };
 
-const useAuthState = () => {
+export const useAuthState = () => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     const [user, setUser] = useState<{
         email: string;
@@ -152,5 +152,3 @@ const useAuthState = () => {
         setLoginError,
     };
 };
-
-export default useAuthState;

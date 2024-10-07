@@ -4,3 +4,5 @@ export * from "./offer";
 export * from "./support";
 export * from "./verify-email";
 export * from "./choose-chair";
+export * from "./setting";
+export * from "./reset-password";

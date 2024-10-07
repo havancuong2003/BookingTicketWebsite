@@ -3,10 +3,7 @@ import { detailRoom, listMovie } from "../../../../services";
 import { Button, TextField, Snackbar } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-    convertToDateTimeLocal,
-    createScreening,
-} from "../../../../services/admin/screening/screening";
+import { convertToDateTimeLocal, createScreening } from "../../../../services";
 
 type FormData = {
     movieId: number;

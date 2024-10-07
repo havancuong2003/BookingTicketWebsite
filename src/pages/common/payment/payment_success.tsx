@@ -9,7 +9,7 @@ import {
     updateSeatsDoneByUserId,
 } from "../../../services";
 import { io } from "socket.io-client";
-import { returnVNPay } from "../../../services/user/vnpay/vnpay";
+import { returnVNPay } from "../../../services";
 import {
     Table,
     TableBody,
