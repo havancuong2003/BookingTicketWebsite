@@ -18,7 +18,10 @@ import {
     Dialog,
 } from "@mui/material";
 import {
-    chooseChair,
+    bookingChair,
+    createNewPayment,
+    deleteSeatChoose,
+    findSeatsAndTypeSeatBookingByUserId,
     getAllSeatByUser,
     getIdUser,
     getInforScreening,
@@ -29,6 +32,7 @@ import { useParams } from "react-router-dom";
 import WarningIcon from "@mui/icons-material/Warning";
 import CloseIcon from "@mui/icons-material/Close";
 import { styled } from "@mui/system";
+import { createVNPay } from "../../../services/user/vnpay/vnpay";
 
 const socket = io("http://localhost:3001");
 
@@ -155,7 +159,7 @@ export const ChooseChair = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const fetchedSeats = await chooseChair(idScreening);
+            const fetchedSeats = await bookingChair(idScreening);
             const filteredSeats = fetchedSeats.filter(
                 (seat: Seat) =>
                     !(
@@ -261,7 +265,42 @@ export const ChooseChair = () => {
     const handleTimeUpConfirm = () => {
         window.location.reload();
     };
+    const handlePayment = async () => {
+        console.log("handlePayment called");
+        try {
+            const totalAmount = normalSeats * 50000 + vipSeats * 80000;
+            const createPayment = async () => {
+                const seatsByUser = await findSeatsAndTypeSeatBookingByUserId(
+                    userData?.id
+                );
+                const paymentData = {
+                    userId: userData?.id,
+                    totalAmount: totalAmount,
+                    screeningId: idScreening,
+                    status: 0,
+                    paymentDetails: seatsByUser.map(
+                        (seat: { seatId: string; seatType: number }) => ({
+                            seatId: seat.seatId,
+                            price: seat.seatType === 0 ? 50000 : 80000,
+                        })
+                    ),
+                };
 
+                const payment = await createNewPayment(paymentData);
+                const orderInfo = payment.paymentId.toString();
+                const paymentUrl = await createVNPay(totalAmount, orderInfo);
+                if (paymentUrl) {
+                    window.location.href = paymentUrl;
+                } else {
+                    console.error("Failed to create payment URL");
+                }
+            };
+
+            createPayment();
+        } catch (error) {
+            console.error("Payment failed:", error);
+        }
+    };
     const handleDivClick = async (id: number) => {
         const updatedItem = seats.find((item) => item.seatId === id);
         if (updatedItem) {
@@ -270,7 +309,6 @@ export const ChooseChair = () => {
                 return;
             }
 
-            // Kiểm tra nếu ghế đang được chọn bởi người dùng khác
             if (
                 updatedItem.status === 1 &&
                 updatedItem.userId !== Number(userData?.id)
@@ -279,35 +317,48 @@ export const ChooseChair = () => {
                 return;
             }
 
-            const newStatus = updatedItem.status === 0 ? 1 : 0;
-            const newUserId = updatedItem.status === 0 ? userData?.id : null;
+            const newStatus =
+                updatedItem.status === 0 || updatedItem.status === null ? 1 : 0;
+
+            const newUserId =
+                updatedItem.status === 0 || updatedItem.status === null
+                    ? userData?.id
+                    : null;
 
             try {
-                await updateStatusSeat(id, {
-                    status: Number(newStatus),
-                    userId: Number(newUserId),
-                });
+                if (newUserId) {
+                    await updateStatusSeat(id, {
+                        status: Number(newStatus),
+                        userId: newUserId,
+                        screeningId: idScreening,
+                    });
+                } else {
+                    deleteSeatChoose(userData?.id, id);
+                }
 
                 setSeats((prevSeats) =>
                     prevSeats.map((seat) =>
                         seat.seatId === id
-                            ? ({
+                            ? {
                                   ...seat,
                                   status: newStatus,
                                   userId: newUserId ?? 0,
-                              } as Seat)
+                              }
                             : seat
                     )
                 );
 
+                const seatLabel = `${updatedItem.rowCode}${updatedItem.seatNumber}`;
                 setSelectedSeats((prevSelectedSeats) => {
-                    const seatLabel = `${updatedItem.rowCode}${updatedItem.seatNumber}`;
-                    if (prevSelectedSeats.includes(seatLabel)) {
+                    if (newStatus === 1) {
+                        // Ghế được chọn
+                        return [...new Set([...prevSelectedSeats, seatLabel])];
+                    } else {
+                        // Ghế bị bỏ chọn
+                        deleteSeatChoose(userData?.id, id);
                         return prevSelectedSeats.filter(
                             (seat) => seat !== seatLabel
                         );
-                    } else {
-                        return [...prevSelectedSeats, seatLabel];
                     }
                 });
 
@@ -420,17 +471,20 @@ export const ChooseChair = () => {
                                         width: "40px",
                                         height: "40px",
                                         color:
-                                            item.status === 0
+                                            item.status === 0 ||
+                                            item.status === null
                                                 ? "black"
                                                 : "white",
                                         backgroundImage:
                                             item.seatType === 0
-                                                ? item.status === 0
+                                                ? item.status === 0 ||
+                                                  item.status === null
                                                     ? `url("/src/assets/img/seat-unselect-normal.png")`
                                                     : item.status === 1
                                                     ? `url("/src/assets/img/seat-select-normal.png")`
                                                     : `url("/src/assets/img/seat-buy-normal.png")`
-                                                : item.status === 0
+                                                : item.status === 0 ||
+                                                  item.status === null
                                                 ? `url("/src/assets/img/seat-unselect-vip.png")`
                                                 : item.status === 1
                                                 ? `url("/src/assets/img/seat-select-vip.png")`
@@ -459,11 +513,13 @@ export const ChooseChair = () => {
                                         variant="caption"
                                         sx={{
                                             color:
-                                                item.status === 0
+                                                item.status === 0 ||
+                                                item.status === null
                                                     ? "black"
                                                     : "white",
                                             textShadow:
-                                                item.status === 0
+                                                item.status === 0 ||
+                                                item.status === null
                                                     ? "none"
                                                     : "1px 1px 2px black",
                                         }}
@@ -664,9 +720,16 @@ export const ChooseChair = () => {
                                 </Typography>
                             )}
                         </Box>
-                        <Button variant="contained" color="primary" fullWidth>
-                            Xác nhận đặt vé
-                        </Button>
+                        {selectedSeats.length > 0 && (
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                fullWidth
+                                onClick={handlePayment}
+                            >
+                                Xác nhận đặt vé
+                            </Button>
+                        )}
                     </Paper>
                 </Grid>
             </Grid>
@@ -683,13 +746,13 @@ export const ChooseChair = () => {
                 >
                     {(() => {
                         const selectedSeat = seats.find(
-                            (seat) => seat.status !== 0
+                            (seat) => seat.status !== 0 && seat.status !== null
                         );
                         if (selectedSeat) {
-                            if (selectedSeat.status === 2) {
-                                return "Ghế này đã được bán";
-                            } else if (selectedSeat.status === 1) {
+                            if (selectedSeat.status === 1) {
                                 return "Ghế này đang có người chọn";
+                            } else if (selectedSeat.status === 2) {
+                                return "Ghế này đã được bán";
                             }
                         }
                         return "Không thể chọn ghế này";

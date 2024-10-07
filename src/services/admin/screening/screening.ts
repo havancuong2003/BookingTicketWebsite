@@ -1,23 +1,31 @@
 import axios from "axios";
 
-export const listScreening = async () => {
+export const listScreeningByRoomId = async (roomId: any) => {
     try {
         const response = await axios.get(
-            `${import.meta.env.VITE_BACKEND_URL}/screening/getAll`
+            `${
+                import.meta.env.VITE_BACKEND_URL
+            }/screening/getByRoomId/${roomId}`
         );
+        console.log(response.data);
+
         return response.data;
     } catch (error) {
         console.error(error);
     }
 };
-export const createScreening = async (data: any, navigate: any) => {
+export const createScreening = async (
+    data: any,
+    navigate: any,
+    roomId: any
+) => {
     try {
         const response = await axios.post(
             `${import.meta.env.VITE_BACKEND_URL}/screening/create`,
             data
         );
         console.log("screening added successfully:", response.data);
-        navigate("/admin/screening/listscreening");
+        navigate(`/admin/screening/listscreening/${roomId}`);
     } catch (error) {
         console.log(data);
         console.error("Error adding screening:", error, data);
