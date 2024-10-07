@@ -86,7 +86,8 @@ export const AddNewMovie = () => {
             console.error("Failed to upload video. Movie creation aborted.");
             return;
         }
-        const releaseDate = new Date(data.releaseDate).toISOString(); // Chuyển đổi thành định dạng ISO-8601
+        const releaseDate = new Date(data.releaseDate); // Chuyển đổi thành định dạng ISO-8601
+        console.log("check release date", releaseDate);
 
         const movieData = {
             title: data.title,

@@ -13,7 +13,7 @@ import {
     verifyEmail,
     getTimeRemainingForVerification,
     resendVerificationEmail,
-} from "../../../services/authenticate/authenticate";
+} from "../../../services";
 import axios from "axios"; // Make sure to import axios
 
 export const VerifyEmail = () => {

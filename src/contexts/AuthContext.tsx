@@ -1,5 +1,5 @@
 import React, { createContext, useContext, ReactNode } from "react";
-import useAuthState from "../hooks/useAuthState";
+import { useAuthState } from "../hooks";
 
 type AuthContextType = ReturnType<typeof useAuthState>;
 

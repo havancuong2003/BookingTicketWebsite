@@ -11,7 +11,7 @@ import {
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { resetPassword } from "../../../services/authenticate/authenticate";
+import { resetPassword } from "../../../services";
 
 type FormResetPassword = {
     newPassword: string;
