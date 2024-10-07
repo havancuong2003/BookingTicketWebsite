@@ -2,14 +2,12 @@ import React, { useEffect, useState } from "react";
 import {
     FaUser,
     FaPhone,
-    FaMapMarkerAlt,
     FaEnvelope,
     FaLock,
     FaStar,
     FaTicketAlt,
 } from "react-icons/fa";
 import { getUserInfo } from "../../../services";
-import { add } from "ramda";
 
 type UserType = {
     id: string;
@@ -21,7 +19,6 @@ type UserType = {
     picture: string;
 };
 export const Setting = () => {
-    const [user, setUser] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [editField, setEditField] = useState<string | null>(null);
@@ -39,7 +36,7 @@ export const Setting = () => {
         const fetchUserInfo = async () => {
             try {
                 const userInfo = (await getUserInfo()) as UserType; // Call getUserInfo instead
-                setUser(userInfo);
+
                 setFormData(userInfo);
             } catch (err) {
                 setError("Không thể lấy thông tin người dùng.");

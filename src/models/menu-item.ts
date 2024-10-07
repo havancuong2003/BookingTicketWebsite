@@ -4,4 +4,5 @@ export interface MenuItem {
     type: "FOOD" | "DRINK";
     price: number;
     image?: string;
+    quantity: number;
 }

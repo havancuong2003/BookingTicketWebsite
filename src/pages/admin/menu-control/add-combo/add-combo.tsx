@@ -38,6 +38,14 @@ export const AddCombo: React.FC<AddComboProps> = ({ onAdd }) => {
     };
 
     const onSubmit = (data: any) => {
+        const totalQuantity = selectedItems.reduce(
+            (acc, item) => acc + item.quantity,
+            0
+        );
+        if (totalQuantity < 2) {
+            alert("Quantity ít nhất là 2 thì mới tính combo");
+            return;
+        }
         const newCombo: ComboItem = {
             name: data.comboName,
             items: selectedItems

@@ -16,6 +16,8 @@ import { FaUtensils, FaGlassWhiskey } from "react-icons/fa";
 export const MenuList: React.FC = () => {
     const { menuItems, setMenuItems, comboItems, setComboItems, addCombo } =
         useMenu();
+    console.log("comboItems", comboItems);
+
     const [message, setMessage] = useState<string>("");
     const [openSnackbar, setOpenSnackbar] = useState(false);
 
@@ -110,7 +112,8 @@ export const MenuList: React.FC = () => {
                                         />
                                     )}
                                     <span className="text-lg">
-                                        {item.name} - {item.price} - {item.type}
+                                        {item.name} - {item.price} - {item.type}{" "}
+                                        - {item.quantity}
                                     </span>
                                 </div>
                                 <button

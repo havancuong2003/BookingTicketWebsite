@@ -182,6 +182,46 @@ export const AddMenu: React.FC = () => {
                         )}
                     </div>
 
+                    <div className="mb-4">
+                        <label
+                            htmlFor="individualQuantity"
+                            className="block text-sm font-medium text-gray-700"
+                        >
+                            Quantity
+                        </label>
+                        <input
+                            type="number"
+                            id="individualQuantity"
+                            {...register("quantity", {
+                                required: "Quantity is required",
+                                min: {
+                                    value: 1,
+                                    message: "Quantity must be at least 1",
+                                },
+                            })} // Đăng ký trường quantity
+                            className={`mt-1 block w-full rounded-md shadow-sm ${
+                                errors.quantity
+                                    ? "border-red-500"
+                                    : "border-gray-300"
+                            } focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50`}
+                            aria-invalid={errors.quantity ? "true" : "false"}
+                            aria-describedby={
+                                errors.quantity
+                                    ? "individualQuantity-error"
+                                    : undefined
+                            }
+                        />
+                        {errors.quantity && (
+                            <p
+                                className="mt-2 text-sm text-red-600"
+                                id="individualQuantity-error"
+                                role="alert"
+                            >
+                                {errors.quantity.message}
+                            </p>
+                        )}
+                    </div>
+
                     <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
