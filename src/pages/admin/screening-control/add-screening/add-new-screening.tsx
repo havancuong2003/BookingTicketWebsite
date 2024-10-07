@@ -8,10 +8,7 @@ import {
 import { Button, TextField, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-    convertToDateTimeLocal,
-    createScreening,
-} from "../../../../services/admin/screening/screening";
+import { convertToDateTimeLocal, createScreening } from "../../../../services";
 
 type FormData = {
     movieId: number;

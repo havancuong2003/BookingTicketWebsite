@@ -11,7 +11,7 @@ import {
 import { useForm } from "react-hook-form";
 
 import { useNavigate } from "react-router-dom";
-import { requestResetPassword } from "../../../services/authenticate/authenticate";
+import { requestResetPassword } from "../../../services";
 
 type FormRequestReset = {
     email: string;

@@ -28,14 +28,13 @@ import {
     AddMenu,
     UpdateMenu,
     Setting,
+    AddNewScreening,
+    ListScreening,
+    ChooseChair,
+    ResetPasswordPage,
+    PaymentSuccess,
 } from "./pages";
-import { AuthProvider } from "./contexts/AuthContext";
-import { AddNewScreening } from "./pages/admin/screening-control";
-import { ListScreening } from "./pages/admin/screening-control/list-screening/list-screening";
-import { ChooseChair } from "./pages/user/choose-chair/choose-chair";
-import { ResetPasswordPage } from "./pages/user/reset-password/reset-password";
-import { PaymentSuccess } from "./pages/common/payment/payment_success";
-import { MenuProvider } from "./contexts";
+import { AuthProvider, MenuProvider } from "./contexts";
 
 const router = createBrowserRouter([
     {

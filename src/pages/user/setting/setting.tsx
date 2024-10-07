@@ -8,7 +8,7 @@ import {
     FaStar,
     FaTicketAlt,
 } from "react-icons/fa";
-import { getUserInfo } from "../../../services/user/user-info/user-info";
+import { getUserInfo } from "../../../services";
 import { add } from "ramda";
 
 type UserType = {

@@ -32,7 +32,7 @@ import { useParams } from "react-router-dom";
 import WarningIcon from "@mui/icons-material/Warning";
 import CloseIcon from "@mui/icons-material/Close";
 import { styled } from "@mui/system";
-import { createVNPay } from "../../../services/user/vnpay/vnpay";
+import { createVNPay } from "../../../services";
 
 const socket = io("http://localhost:3001");
 

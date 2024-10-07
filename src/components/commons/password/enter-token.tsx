@@ -13,7 +13,7 @@ import {
     verifyResetToken,
     getTimeRemainingForReset,
     requestResetPassword,
-} from "../../../services/authenticate/authenticate";
+} from "../../../services";
 import { useNavigate } from "react-router-dom";
 import { AxiosError } from "axios";
 
