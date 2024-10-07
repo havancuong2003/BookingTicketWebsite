@@ -13,6 +13,8 @@ setupInterceptors(axiosInstance);
 export const getUserInfo = async () => {
     try {
         const response = await axiosInstance.post("/user/getInfo");
+        console.log("response", response);
+
         return response.data;
     } catch (error) {
         console.error("Error fetching user info:", error);
