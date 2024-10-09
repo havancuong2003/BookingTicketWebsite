@@ -98,3 +98,13 @@ export const deleteCombo = async (id: number) => {
         throw error; // Ném lỗi để component gọi API có thể xử lý
     }
 };
+
+export const getFullInforCombos = async () => {
+    try {
+        const response = await axiosInstance.get("/menu/full-info-combos");
+        return response.data;
+    } catch (error) {
+        console.error("Error fetching combos:", error);
+        throw error; // Ném lỗi để component gọi API có thể xử lý
+    }
+};

@@ -1,12 +1,14 @@
-import { Button, TextField } from "@mui/material";
+import { Button, TextField, Snackbar } from "@mui/material"; // Thêm Snackbar
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { createRoom, listCinema } from "../../../../services";
+
 type FormData = {
     roomCodeInput: string;
     cinemaIDInput: number;
 };
+
 type Cinema = {
     cinemaId: number;
     name: string;
@@ -15,6 +17,8 @@ type Cinema = {
 export const AddNewRoom = () => {
     const { cinemaId } = useParams();
     const [cinemas, setCinemas] = useState<Cinema[]>([]);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
 
     useEffect(() => {
         const fetchData = async () => {
@@ -28,6 +32,12 @@ export const AddNewRoom = () => {
     const navigate = useNavigate();
 
     const onSubmit = async (data: FormData) => {
+        if (!data.roomCodeInput || data.roomCodeInput === "") {
+            setSnackbarMessage("Vui lòng điền mã phòng!");
+            setOpenSnackbar(true);
+            return;
+        }
+
         const roomData = {
             roomCode: data.roomCodeInput,
             cinemaId: Number(cinemaId),
@@ -36,21 +46,23 @@ export const AddNewRoom = () => {
         createRoom(roomData, navigate, cinemaId);
     };
 
+    const handleCloseSnackbar = () => {
+        setOpenSnackbar(false);
+    };
+
     return (
         <div className="flex justify-center">
             <div className="w-full max-w-lg">
-                <h1 className="text-center mb-6">Thêm 1 rap chieu mới</h1>
+                <h1 className="text-center mb-6">Thêm phòng chiếu mới</h1>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="grid grid-cols-2 gap-4">
                         <TextField
                             id="roomCodeInput"
-                            label="ma phong"
+                            label="mã phòng"
                             variant="outlined"
                             fullWidth
                             margin="normal"
-                            {...register("roomCodeInput", {
-                                required: "Ma phong là bắt buộc.",
-                            })}
+                            {...register("roomCodeInput", {})}
                         />
                     </div>
                     <Button
@@ -59,9 +71,15 @@ export const AddNewRoom = () => {
                         color="primary"
                         className="mt-4 w-full"
                     >
-                        Thêm phong chieu moi
+                        Thêm phòng chiếu mới
                     </Button>
                 </form>
+                <Snackbar
+                    open={openSnackbar}
+                    autoHideDuration={6000}
+                    onClose={handleCloseSnackbar}
+                    message={snackbarMessage}
+                />
             </div>
         </div>
     );

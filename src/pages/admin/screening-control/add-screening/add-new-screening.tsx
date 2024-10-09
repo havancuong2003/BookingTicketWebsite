@@ -125,10 +125,10 @@ export const AddNewScreening = () => {
                         color="primary"
                         className="mt-4 w-full"
                     >
-                        Thêm lich chieu moi
+                        Thêm lịch chiếu mới
                     </Button>
                 </form>
-                <Snackbar // Thêm Snackbar để hiển thị thông báo
+                <Snackbar
                     open={openSnackbar}
                     autoHideDuration={6000}
                     onClose={handleCloseSnackbar}

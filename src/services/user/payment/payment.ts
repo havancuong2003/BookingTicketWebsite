@@ -6,7 +6,6 @@ export const createNewPayment = async (paymentData: any) => {
             `${import.meta.env.VITE_BACKEND_URL}/payment`,
             paymentData
         );
-        console.log("sdfasdfasdfsadfasf:", payment.data);
 
         return payment.data;
     } catch (error) {
@@ -18,7 +17,6 @@ export const getPaymentByPaymentId = async (paymentId: any) => {
         const response = await axios.get(
             `${import.meta.env.VITE_BACKEND_URL}/payment/${paymentId}`
         );
-        console.log(response.data);
 
         return response.data;
     } catch (error) {
