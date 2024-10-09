@@ -50,3 +50,16 @@ export const detailMovie = async (id: number) => {
         console.error(error);
     }
 };
+
+export const updateMovieAPI = async (id: number, movieData: any) => {
+    try {
+        const response = await axiosInstance.put(
+            `/movie/update/${id}`,
+            movieData
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error updating movie:", error);
+        throw error;
+    }
+};
