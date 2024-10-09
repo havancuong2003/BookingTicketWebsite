@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-    TextField,
-    Button,
-    MenuItem,
-    Select,
-    InputLabel,
-    FormControl,
-} from "@mui/material";
+import { TextField, Button, InputLabel } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { createMovie, getIDMovieAfterUpload } from "../../../../services";
@@ -18,7 +11,6 @@ type FormData = {
     actors: string;
     releaseDate: string;
     rating: number;
-    status: string;
     duration: number;
     createdAt: string;
     updatedAt: string;
@@ -96,7 +88,6 @@ export const AddNewMovie = () => {
             actors: data.actors,
             releaseDate: releaseDate,
             rating: Number(data.rating), // Chuyển đổi thành số
-            status: data.status,
             duration: Number(data.duration),
             trailer: videoId,
         };
@@ -201,38 +192,7 @@ export const AddNewMovie = () => {
                             error={!!errors.rating}
                             helperText={errors.rating?.message}
                         />
-                        <FormControl
-                            fullWidth
-                            margin="normal"
-                            variant="outlined"
-                        >
-                            <InputLabel id="status-label">
-                                Trạng thái
-                            </InputLabel>
-                            <Select
-                                labelId="status-label"
-                                id="status"
-                                label="Trạng thái"
-                                defaultValue=""
-                                {...register("status", {
-                                    required: "Trạng thái là bắt buộc.",
-                                })}
-                                error={!!errors.status}
-                            >
-                                <MenuItem value="đang chiếu">
-                                    Đang chiếu
-                                </MenuItem>
-                                <MenuItem value="sắp chiếu">Sắp chiếu</MenuItem>
-                                <MenuItem value="ngừng chiếu">
-                                    Ngừng chiếu
-                                </MenuItem>
-                            </Select>
-                            {errors.status && (
-                                <p className="text-red-500">
-                                    {errors.status.message}
-                                </p>
-                            )}
-                        </FormControl>
+
                         <TextField
                             id="duration"
                             label="Thời gian chạy (phút)"
