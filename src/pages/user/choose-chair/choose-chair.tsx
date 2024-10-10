@@ -123,7 +123,16 @@ export const ChooseChair = () => {
     const [selectedFoodQuantities, setSelectedFoodQuantities] = useState<{
         [key: number]: number;
     }>({}); // State to track quantities
-
+    let amountCombo = 0;
+    if (selectedCombos.length > 0) {
+        amountCombo = selectedCombos.reduce(
+            (total, combo) => total + combo.quantity * combo.price,
+            0
+        );
+    }
+    const formatCurrency = (amount: number) => {
+        return amount.toLocaleString("vi-VN") + "đ";
+    };
     const handleFoodDialogOpen = () => {
         setOpenFoodDialog(true);
     };
@@ -335,7 +344,8 @@ export const ChooseChair = () => {
     };
     const handlePayment = async () => {
         try {
-            const totalAmount = normalSeats * 50000 + vipSeats * 80000;
+            const totalAmount =
+                normalSeats * 50000 + vipSeats * 80000 + amountCombo;
             const createPayment = async () => {
                 const seatsByUser = await findSeatsAndTypeSeatBookingByUserId(
                     userData?.id
@@ -351,6 +361,10 @@ export const ChooseChair = () => {
                             price: seat.seatType === 0 ? 50000 : 80000,
                         })
                     ),
+                    bookingCombos: selectedCombos.map((combo) => ({
+                        comboId: combo.id,
+                        quantity: combo.quantity,
+                    })),
                 };
 
                 const payment = await createNewPayment(paymentData);
@@ -698,7 +712,8 @@ export const ChooseChair = () => {
                                 >
                                     {(
                                         normalSeats * 50000 +
-                                        vipSeats * 80000
+                                        vipSeats * 80000 +
+                                        amountCombo
                                     ).toLocaleString()}
                                     đ
                                 </Typography>
@@ -787,22 +802,23 @@ export const ChooseChair = () => {
                                 </Typography>
                             )}
                         </Box>
-                        <Typography variant="subtitle1" gutterBottom>
-                            {" "}
-                            Bỏng + nước:
-                            {selectedCombos.length > 0 ? (
-                                selectedCombos.map((combo) => (
-                                    <Typography key={combo.id} sx={{ mb: 2 }}>
-                                        {combo.name}, Số lượng: {combo.quantity}
-                                    </Typography>
-                                ))
-                            ) : (
-                                <Typography
-                                    variant="body2"
-                                    color={"blue"}
-                                ></Typography>
+                        <Box>
+                            {selectedCombos.length > 0 && (
+                                <Typography variant="subtitle1" gutterBottom>
+                                    Combo ưu đãi:
+                                    {selectedCombos.map((combo) => (
+                                        <Typography
+                                            key={combo.id}
+                                            sx={{ mb: 1 }}
+                                        >
+                                            {combo.name}, Số lượng:{" "}
+                                            {combo.quantity}, Giá:{" "}
+                                            {formatCurrency(combo.price)}
+                                        </Typography>
+                                    ))}
+                                </Typography>
                             )}
-                        </Typography>
+                        </Box>
                         {selectedSeats.length > 0 && (
                             <Button
                                 variant="contained"
@@ -1009,7 +1025,7 @@ export const ChooseChair = () => {
                                                 )}
                                             </TableCell>
                                             <TableCell align="left">
-                                                {item.price}đ
+                                                {formatCurrency(item.price)}
                                             </TableCell>
                                             <TableCell align="center">
                                                 <span
@@ -1055,18 +1071,6 @@ export const ChooseChair = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
-            <Box>
-                <Typography variant="h6">Selected Combos:</Typography>
-                {selectedCombos.length > 0 ? (
-                    selectedCombos.map((combo) => (
-                        <Typography key={combo.id}>
-                            Combo ID: {combo.id}, Quantity: {combo.quantity}
-                        </Typography>
-                    ))
-                ) : (
-                    <Typography variant="body2">No combos selected.</Typography>
-                )}
-            </Box>
         </Container>
     );
 };
