@@ -23,6 +23,8 @@ import {
     deleteSeatChoose,
     findSeatsAndTypeSeatBookingByUserId,
     getAllSeatByUser,
+    getCombos,
+    getFullInforCombos,
     getIdUser,
     getInforScreening,
     updateSeatsByUserToDefault,
@@ -33,6 +35,14 @@ import WarningIcon from "@mui/icons-material/Warning";
 import CloseIcon from "@mui/icons-material/Close";
 import { styled } from "@mui/system";
 import { createVNPay } from "../../../services";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+} from "@mui/material";
 
 const socket = io("http://localhost:3001");
 
@@ -72,6 +82,19 @@ const StyledDialog = styled(Dialog)({
     },
 });
 
+type ComboItem = {
+    itemQuantity: number;
+    itemName: string;
+};
+
+type Combo = {
+    id: number;
+    name: string;
+    price: number;
+    image: string;
+    items: ComboItem[];
+};
+
 const StyledDialogTitle = styled(DialogTitle)(({ theme }) => ({
     margin: 0,
     padding: theme.spacing(2),
@@ -92,6 +115,55 @@ export const ChooseChair = () => {
     const [timeLeft, setTimeLeft] = useState(60 * 6); // 60 seconds = 1 minute
     const [isTimeUp, setIsTimeUp] = useState(false);
     const [openLoginAlert, setOpenLoginAlert] = useState(false);
+    const [comboItems, setComboItems] = useState<Combo[]>([]);
+    const [selectedCombos, setSelectedCombos] = useState<
+        { id: number; quantity: number; price: number; name: string }[]
+    >([]);
+    const [openFoodDialog, setOpenFoodDialog] = useState(false);
+    const [selectedFoodQuantities, setSelectedFoodQuantities] = useState<{
+        [key: number]: number;
+    }>({}); // State to track quantities
+    let amountCombo = 0;
+    if (selectedCombos.length > 0) {
+        amountCombo = selectedCombos.reduce(
+            (total, combo) => total + combo.quantity * combo.price,
+            0
+        );
+    }
+    const formatCurrency = (amount: number) => {
+        return amount.toLocaleString("vi-VN") + "đ";
+    };
+    const handleFoodDialogOpen = () => {
+        setOpenFoodDialog(true);
+    };
+
+    const handleFoodDialogClose = () => {
+        setOpenFoodDialog(false);
+    };
+
+    const handleQuantityChange = (id: number, change: number) => {
+        setSelectedFoodQuantities((prev) => {
+            const currentQuantity = prev[id] || 0;
+            const newQuantity = currentQuantity + change;
+            return {
+                ...prev,
+                [id]: Math.max(newQuantity, 0),
+            };
+        });
+    };
+    const handleConfirmCombos = () => {
+        const newSelectedCombos = comboItems
+            .map((item) => ({
+                id: item.id,
+                quantity: selectedFoodQuantities[item.id] || 0,
+                price: item.price,
+                name: item.name,
+            }))
+            .filter((combo) => combo.quantity > 0);
+
+        setSelectedCombos(newSelectedCombos);
+        handleFoodDialogClose();
+    };
 
     const idScreening = useParams().idScreening;
 
@@ -99,8 +171,6 @@ export const ChooseChair = () => {
         const getInforUser = async () => {
             try {
                 const data = await getIdUser();
-                console.log("data", data);
-
                 if (!data) {
                     setOpenLoginAlert(true);
                     return;
@@ -150,11 +220,18 @@ export const ChooseChair = () => {
     useEffect(() => {
         const fetchData = async () => {
             const userIf = await getIdUser();
-            console.log("userIf", userIf);
-
             setUserData(userIf);
         };
         fetchData();
+    }, []);
+    useEffect(() => {
+        const comboItems = async () => {
+            const combos = await getFullInforCombos();
+            console.log(combos);
+
+            setComboItems(combos);
+        };
+        comboItems();
     }, []);
 
     useEffect(() => {
@@ -266,9 +343,9 @@ export const ChooseChair = () => {
         window.location.reload();
     };
     const handlePayment = async () => {
-        console.log("handlePayment called");
         try {
-            const totalAmount = normalSeats * 50000 + vipSeats * 80000;
+            const totalAmount =
+                normalSeats * 50000 + vipSeats * 80000 + amountCombo;
             const createPayment = async () => {
                 const seatsByUser = await findSeatsAndTypeSeatBookingByUserId(
                     userData?.id
@@ -284,6 +361,10 @@ export const ChooseChair = () => {
                             price: seat.seatType === 0 ? 50000 : 80000,
                         })
                     ),
+                    bookingCombos: selectedCombos.map((combo) => ({
+                        comboId: combo.id,
+                        quantity: combo.quantity,
+                    })),
                 };
 
                 const payment = await createNewPayment(paymentData);
@@ -443,17 +524,17 @@ export const ChooseChair = () => {
                         </Box>
                         <Box
                             sx={{
-                                width: "calc(100% - 16px)", // Adjust for the gap in the seat grid
-                                height: "70px", // Increased height
+                                width: "calc(100% - 16px)",
+                                height: "70px",
                                 marginTop: "20px",
                                 backgroundImage:
                                     'url("/src/assets/img/ic-screen.png")',
-                                backgroundSize: "100% 100%", // Changed to cover both width and height
+                                backgroundSize: "100% 100%",
                                 backgroundRepeat: "no-repeat",
                                 backgroundColor: "transparent !important",
                                 backgroundPosition: "center",
                                 mb: 2,
-                                mx: "auto", // Center the screen
+                                mx: "auto",
                             }}
                         />
                         <Box
@@ -631,7 +712,8 @@ export const ChooseChair = () => {
                                 >
                                     {(
                                         normalSeats * 50000 +
-                                        vipSeats * 80000
+                                        vipSeats * 80000 +
+                                        amountCombo
                                     ).toLocaleString()}
                                     đ
                                 </Typography>
@@ -720,6 +802,34 @@ export const ChooseChair = () => {
                                 </Typography>
                             )}
                         </Box>
+                        <Box>
+                            {selectedCombos.length > 0 && (
+                                <Typography variant="subtitle1" gutterBottom>
+                                    Combo ưu đãi:
+                                    {selectedCombos.map((combo) => (
+                                        <Typography
+                                            key={combo.id}
+                                            sx={{ mb: 1 }}
+                                        >
+                                            {combo.name}, Số lượng:{" "}
+                                            {combo.quantity}, Giá:{" "}
+                                            {formatCurrency(combo.price)}
+                                        </Typography>
+                                    ))}
+                                </Typography>
+                            )}
+                        </Box>
+                        {selectedSeats.length > 0 && (
+                            <Button
+                                variant="contained"
+                                color="warning"
+                                fullWidth
+                                sx={{ mb: 2 }}
+                                onClick={handleFoodDialogOpen}
+                            >
+                                Nước + bỏng ngô
+                            </Button>
+                        )}
                         {selectedSeats.length > 0 && (
                             <Button
                                 variant="contained"
@@ -821,6 +931,142 @@ export const ChooseChair = () => {
                         variant="contained"
                         autoFocus
                     >
+                        Xác nhận
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog
+                open={openFoodDialog}
+                onClose={handleFoodDialogClose}
+                PaperProps={{
+                    sx: {
+                        borderRadius: 8,
+                        padding: 2,
+                        boxShadow: 3,
+                    },
+                }}
+            >
+                <DialogTitle
+                    sx={{
+                        fontWeight: "bold",
+                        fontSize: "1.5rem",
+                        textAlign: "center",
+                        backgroundColor: "#f5f5f5",
+                        padding: "16px",
+                        borderTopLeftRadius: "8px",
+                        borderTopRightRadius: "8px",
+                        color: "#333",
+                        borderBottom: "1px solid #ccc",
+                        marginBottom: "10px",
+                    }}
+                >
+                    Chọn combo ưu đãi
+                </DialogTitle>
+                <DialogContent>
+                    <TableContainer>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Combo</TableCell>
+                                    <TableCell>Chi tiết</TableCell>
+                                    <TableCell align="left">Giá</TableCell>
+                                    <TableCell align="left">Số lượng</TableCell>
+                                    <TableCell align="right">
+                                        Thao tác
+                                    </TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {comboItems.map((item) => {
+                                    const quantity =
+                                        selectedFoodQuantities[item.id] || 0; // Get current quantity
+                                    return (
+                                        <TableRow key={item.id}>
+                                            <TableCell>
+                                                <div
+                                                    style={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                    }}
+                                                >
+                                                    <img
+                                                        src={item.image}
+                                                        alt={item.name}
+                                                        style={{
+                                                            width: 50,
+                                                            height: 50,
+                                                            marginRight: 10,
+                                                            borderRadius: 8,
+                                                        }}
+                                                    />
+                                                    {item.name}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell align="left">
+                                                {item.items.map(
+                                                    (comboItem, index) => (
+                                                        <Typography
+                                                            key={
+                                                                comboItem.itemName
+                                                            }
+                                                        >
+                                                            {
+                                                                comboItem.itemQuantity
+                                                            }{" "}
+                                                            {comboItem.itemName}{" "}
+                                                            {index <
+                                                            item.items.length -
+                                                                1
+                                                                ? " + "
+                                                                : ""}
+                                                            {}
+                                                        </Typography>
+                                                    )
+                                                )}
+                                            </TableCell>
+                                            <TableCell align="left">
+                                                {formatCurrency(item.price)}
+                                            </TableCell>
+                                            <TableCell align="center">
+                                                <span
+                                                    style={{ margin: "0 10px" }}
+                                                >
+                                                    {quantity}
+                                                </span>
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                <Button
+                                                    onClick={() =>
+                                                        handleQuantityChange(
+                                                            item.id,
+                                                            -1
+                                                        )
+                                                    }
+                                                    disabled={quantity === 0}
+                                                >
+                                                    -
+                                                </Button>
+                                                <Button
+                                                    onClick={() =>
+                                                        handleQuantityChange(
+                                                            item.id,
+                                                            1
+                                                        )
+                                                    }
+                                                    disabled={quantity === 5}
+                                                >
+                                                    +
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleConfirmCombos} color="primary">
                         Xác nhận
                     </Button>
                 </DialogActions>

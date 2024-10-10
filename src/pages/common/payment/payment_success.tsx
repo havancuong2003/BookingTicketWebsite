@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {
     findSeatsBookingByUserId,
     getIdUser,
+    getInforBookingComboByPaymentId,
     getPaymentByPaymentId,
     getPaymentDetailByPaymentId,
     sendPaymentSuccess,
@@ -42,12 +43,18 @@ type PaymentDetail = {
     seatNumber: number;
     price: number;
 };
+type bookingCombo = {
+    quantity: number;
+    comboPrice: number;
+    comboName: string;
+};
 
 export function PaymentSuccess() {
     const socket = io("http://localhost:3001");
     const [data, setData] = useState<any>(null);
     const [paymentDetail, setPaymentDetail] = useState<PaymentDetail[]>([]);
     const [paymentInfor, setPaymentInfor] = useState<Payment>();
+    const [bookingCombo, setBookingCombo] = useState<bookingCombo[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -103,6 +110,13 @@ export function PaymentSuccess() {
             setPaymentDetail(await getPaymentDetailByPaymentId(paymentId));
         };
         getPaymentDetail();
+    }, [paymentId]);
+
+    useEffect(() => {
+        const getInforBookingCombo = async () => {
+            setBookingCombo(await getInforBookingComboByPaymentId(paymentId));
+        };
+        getInforBookingCombo();
     }, [paymentId]);
 
     useEffect(() => {
@@ -212,13 +226,21 @@ export function PaymentSuccess() {
                 Ngày thanh toán:{" "}
                 {paymentInfor ? formatDate(paymentInfor.paymentDate) : ""}
             </Typography>
-            <Typography
-                variant="h6"
-                style={{ fontWeight: "bold", color: "#000" }}
-            >
-                Tổng tiền:{" "}
-                {paymentInfor ? formatCurrency(paymentInfor.totalAmount) : ""}
-            </Typography>
+
+            {bookingCombo.length > 0 && (
+                <div>
+                    <Typography variant="h6" style={{ marginBottom: "10px" }}>
+                        Combo ưu đãi:
+                    </Typography>
+                    {bookingCombo.map((combo, index) => (
+                        <Typography key={index} variant="body1">
+                            {combo.comboName}:{" "}
+                            {formatCurrency(combo.comboPrice)}, số lượng:{" "}
+                            {combo.quantity}
+                        </Typography>
+                    ))}
+                </div>
+            )}
 
             <TableContainer component={Paper} style={{ marginTop: "20px" }}>
                 <Table>
@@ -245,6 +267,13 @@ export function PaymentSuccess() {
                     </TableBody>
                 </Table>
             </TableContainer>
+            <Typography
+                variant="h6"
+                style={{ fontWeight: "bold", color: "#000" }}
+            >
+                Tổng tiền:{" "}
+                {paymentInfor ? formatCurrency(paymentInfor.totalAmount) : ""}
+            </Typography>
         </Paper>
     );
 }

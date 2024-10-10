@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
-import {
-    detailRoom,
-    listCinema,
-    listMovie,
-    listRoom,
-} from "../../../../services";
-import { Button, TextField, Typography } from "@mui/material";
+import { detailRoom, listMovie } from "../../../../services";
+import { Button, TextField, Snackbar } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { convertToDateTimeLocal, createScreening } from "../../../../services";
@@ -37,6 +32,9 @@ export const AddNewScreening = () => {
     const { register, handleSubmit } = useForm<FormData>();
     const [roomdetails, setRoomsDetails] = useState<RoomDetails>();
 
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState("");
+
     const navigate = useNavigate();
     useEffect(() => {
         const fetchData = async () => {
@@ -53,6 +51,16 @@ export const AddNewScreening = () => {
         fetchData();
     }, []);
     const onSubmit = async (data: FormData) => {
+        if (!data.startTime || data.startTime === "") {
+            setSnackbarMessage("Vui lòng chọn thời gian chiếu phim.");
+            setOpenSnackbar(true);
+            return;
+        } else if (!data.movieId || !data.startTime) {
+            setSnackbarMessage("Vui lòng điền đầy đủ thông tin.");
+            setOpenSnackbar(true);
+            return;
+        }
+
         const durationMovie = movie.find(
             (mv) => mv.id == data.movieId
         )?.duration;
@@ -68,9 +76,12 @@ export const AddNewScreening = () => {
             startTime: new Date(data.startTime).toISOString(),
             endTime: new Date(endTimee).toISOString(),
         };
-        console.log(endTimee);
 
         createScreening(roomData, navigate, roomId);
+    };
+
+    const handleCloseSnackbar = () => {
+        setOpenSnackbar(false);
     };
 
     return (
@@ -86,6 +97,7 @@ export const AddNewScreening = () => {
                         <select id="movieId" {...register("movieId")}>
                             {movie.map((mv) => (
                                 <option
+                                    key={mv.id}
                                     value={mv.id}
                                     style={{ border: "1px solid black" }}
                                 >
@@ -104,9 +116,7 @@ export const AddNewScreening = () => {
                             type="datetime-local"
                             fullWidth
                             margin="normal"
-                            {...register("startTime", {
-                                required: "Thoi gian bat dau là bắt buộc.",
-                            })}
+                            {...register("startTime", {})}
                         />
                     </div>
                     <Button
@@ -115,9 +125,15 @@ export const AddNewScreening = () => {
                         color="primary"
                         className="mt-4 w-full"
                     >
-                        Thêm lich chieu moi
+                        Thêm lịch chiếu mới
                     </Button>
                 </form>
+                <Snackbar
+                    open={openSnackbar}
+                    autoHideDuration={6000}
+                    onClose={handleCloseSnackbar}
+                    message={snackbarMessage}
+                />
             </div>
         </div>
     );
