@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { TextField, Button, InputLabel } from "@mui/material";
-import { useForm } from "react-hook-form";
+import { TextField, Button, InputLabel, Chip } from "@mui/material";
+import { useForm, Controller } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { createMovie, getIDMovieAfterUpload } from "../../../../services";
 
@@ -12,17 +12,20 @@ type FormData = {
     releaseDate: string;
     rating: number;
     duration: number;
-    createdAt: string;
-    updatedAt: string;
+    banner: string; // New property for banner image link
+    types: string[]; // New property for movie types
 };
 
 export const AddNewMovie = () => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [notiSuccess, setNotiSuccess] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [types, setTypes] = useState<string[]>([]); // State to hold movie types
+    const [currentType, setCurrentType] = useState<string>(""); // State to hold current type input
     const {
         register,
         handleSubmit,
+        control,
         formState: { errors },
     } = useForm<FormData>();
     const navigate = useNavigate();
@@ -48,7 +51,7 @@ export const AddNewMovie = () => {
 
             if (videoData.statusCode === 200) {
                 setNotiSuccess(videoData.message);
-                // Trả về Promise để đợi 3 giây
+                // Return a Promise to wait for 3 seconds
                 return new Promise((resolve) => {
                     setTimeout(() => {
                         resolve(videoData.data.id);
@@ -65,6 +68,17 @@ export const AddNewMovie = () => {
         }
     };
 
+    const handleAddType = () => {
+        if (currentType && !types.includes(currentType)) {
+            setTypes([...types, currentType]);
+            setCurrentType("");
+        }
+    };
+
+    const handleRemoveType = (typeToRemove: string) => {
+        setTypes(types.filter((type) => type !== typeToRemove));
+    };
+
     const onSubmit = async (data: FormData) => {
         if (!selectedFile) {
             console.error("No video file selected.");
@@ -78,7 +92,7 @@ export const AddNewMovie = () => {
             console.error("Failed to upload video. Movie creation aborted.");
             return;
         }
-        const releaseDate = new Date(data.releaseDate); // Chuyển đổi thành định dạng ISO-8601
+        const releaseDate = new Date(data.releaseDate); // Convert to ISO-8601 format
         console.log("check release date", releaseDate);
 
         const movieData = {
@@ -87,9 +101,11 @@ export const AddNewMovie = () => {
             director: data.director,
             actors: data.actors,
             releaseDate: releaseDate,
-            rating: Number(data.rating), // Chuyển đổi thành số
+            rating: Number(data.rating), // Convert to number
             duration: Number(data.duration),
             trailer: videoId,
+            banner: data.banner, // Include banner in movie data
+            types: types, // Include types in movie data
         };
 
         createMovie(movieData, navigate);
@@ -192,7 +208,6 @@ export const AddNewMovie = () => {
                             error={!!errors.rating}
                             helperText={errors.rating?.message}
                         />
-
                         <TextField
                             id="duration"
                             label="Thời gian chạy (phút)"
@@ -205,6 +220,63 @@ export const AddNewMovie = () => {
                             })}
                             error={!!errors.duration}
                             helperText={errors.duration?.message}
+                        />
+                        <TextField
+                            id="banner" // New input for banner image link
+                            label="Banner Image Link"
+                            variant="outlined"
+                            fullWidth
+                            margin="normal"
+                            {...register("banner", {
+                                required: "Banner image link is required.",
+                            })}
+                            error={!!errors.banner}
+                            helperText={errors.banner?.message}
+                        />
+
+                        {/* New input for movie types */}
+                        <div className="col-span-2">
+                            <InputLabel>Movie Types</InputLabel>
+                            <div className="flex items-center">
+                                <TextField
+                                    value={currentType}
+                                    onChange={(e) =>
+                                        setCurrentType(e.target.value)
+                                    }
+                                    variant="outlined"
+                                    fullWidth
+                                    placeholder="Enter a movie type"
+                                />
+                                <Button
+                                    onClick={handleAddType}
+                                    variant="contained"
+                                    color="primary"
+                                    style={{ marginLeft: "10px" }}
+                                >
+                                    Add
+                                </Button>
+                            </div>
+                            <div className="mt-2">
+                                {types.map((type, index) => (
+                                    <Chip
+                                        key={index}
+                                        label={type}
+                                        onDelete={() => handleRemoveType(type)}
+                                        color="primary"
+                                        style={{ margin: "2px" }}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Hidden input to include types in form data */}
+                        <Controller
+                            name="types"
+                            control={control}
+                            defaultValue={[]}
+                            render={({ field }) => (
+                                <input type="hidden" {...field} value={types} />
+                            )}
                         />
 
                         <div className="col-span-2">
